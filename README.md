@@ -1,4 +1,4 @@
-# task-management-service
+# Task Management Service
 This repository contains the task management service for the DevHeaven platform.
 
 # Contribution
