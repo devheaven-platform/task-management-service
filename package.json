@@ -31,7 +31,7 @@
   "scripts": {
     "start": "node src/",
     "dev": "nodemon src/",
-    "test": "mocha --recursive --require ./test/mongoHelper.js test",
+    "test": "eslint . --fix && mocha --recursive --require ./test/mongoHelper.js test",
     "lint": "eslint . --fix"
   },
   "author": "",

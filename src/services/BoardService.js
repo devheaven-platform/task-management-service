@@ -1,16 +1,15 @@
-const Board = require("../models/Board");
+const Board = require( "../models/Board" );
 
 /**
  *
  * @param {String} name, the name of the board.
  */
-async function createBoard(projectId, name) {
+async function createBoard( projectId, name ) {
     let boardName = "Default";
-    if (name) {
+    if ( name ) {
         boardName = name;
     }
-    if (!projectId)
-        return null;
+    if ( !projectId ) return null;
 
     const board = new Board();
     board.projectId = projectId;
@@ -19,10 +18,29 @@ async function createBoard(projectId, name) {
 
     return board;
 }
-async function getAll(projectId) {
-    const boards = await Board.find({ projectId: projectId }).exec();
+
+/**
+ * Gets all boards of a project.
+ * @param {String} projectId, the id of the project.
+ */
+async function getAll( projectId ) {
+    const boards = await Board.find( { projectId } ).exec();
     return boards;
 }
+
+/**
+ * Deletes a board from the database.
+ * @param {String} id, the id of the board.
+ */
+async function deleteBoard( id ) {
+    try {
+        await Board.deleteOne( { _id: id } ).exec();
+        return true;
+    } catch ( e ) {
+        return false;
+    }
+}
+
 module.exports = {
-    createBoard, getAll
+    createBoard, getAll, deleteBoard,
 };
