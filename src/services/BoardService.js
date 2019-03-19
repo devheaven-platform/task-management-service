@@ -21,8 +21,8 @@ async function createBoard(projectId, name) {
 }
 
 /**
- * Deletes a board from the database.
- * @param {ObjectId} projectId, the id of the board 
+ * Gets all boards of a project.
+ * @param {String} projectId, the id of the project.
  */
 async function getAll(projectId) {
     const boards = await Board.find({ projectId: projectId }).exec();
@@ -30,6 +30,10 @@ async function getAll(projectId) {
 }
 
 
+/**
+ * Deletes a board from the database.
+ * @param {String} id, the id of the board.
+ */
 async function deleteBoard( id ) {
     try {
         await Board.deleteOne( { _id: id } ).exec();
