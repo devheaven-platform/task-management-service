@@ -20,15 +20,13 @@ const mongoURI = process.env.MONGO_URI;
 app.use( bodyparser.json() );
 app.use( cors() );
 
-//Routes
-const boardRoutes = require("./routes/BoardRoutes");
-app.use("/board", boardRoutes);
+// Routes
+const boardRoutes = require( "./routes/BoardRoutes" );
+
+app.use( "/board", boardRoutes );
 
 // Connect database
-mongoose
-    .connect( mongoURI + mongoDB, { useNewUrlParser: true, useCreateIndex: true, useFindAndModify: false } )
-    .then( () => logger.info( "MongoDB connected" ) )
-    .catch( error => logger.error( error.stack ) );
+mongoose.connect( mongoURI + mongoDB, { useNewUrlParser: true, useCreateIndex: true, useFindAndModify: false } ).then( () => logger.info( "MongoDB connected" ) ).catch( error => logger.error( error.stack ) );
 
 // Register prometheus
 Prometheus.collectDefaultMetrics();
