@@ -19,10 +19,26 @@ async function createBoard(projectId, name) {
 
     return board;
 }
+
+/**
+ * Deletes a board from the database.
+ * @param {ObjectId} projectId, the id of the board 
+ */
 async function getAll(projectId) {
     const boards = await Board.find({ projectId: projectId }).exec();
     return boards;
 }
+
+
+async function deleteBoard( id ) {
+    try {
+        await Board.deleteOne( { _id: id } ).exec();
+        return true;
+    } catch ( e ) {
+        return false;
+    }
+}
+
 module.exports = {
-    createBoard, getAll
+    createBoard, getAll, deleteBoard
 };

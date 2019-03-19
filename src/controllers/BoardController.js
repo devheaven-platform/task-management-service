@@ -21,6 +21,17 @@ async function getAll(req, res) {
 
     res.json({ message: "Retrieved all boards of the project.", boards: boards });
 }
+
+async function deleteBoard( req, res ) {
+    const result = await BoardService.deleteBoard( req.body.id );
+    if ( result ) {
+        res.status( 204 );
+    } else {
+        res.status( 500 );
+        res.json( { message: "Something went wrong while trying to delete the board!" } );
+    }
+}
+
 module.exports = {
-    createBoard, getAll
+    createBoard, deleteBoard, getAll,
 };
