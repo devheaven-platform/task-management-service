@@ -17,6 +17,16 @@ async function createBoard( name ) {
     return board;
 }
 
+async function deleteBoard( id ) {
+    try {
+        await Board.deleteOne( { _id: id } ).exec();
+        return true;
+    } catch ( e ) {
+        return false;
+    }
+}
+
 module.exports = {
     createBoard,
+    deleteBoard,
 };

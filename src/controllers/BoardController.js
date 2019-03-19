@@ -10,6 +10,18 @@ async function createBoard( req, res ) {
 
     res.json( { message: "Created board!", board } );
 }
+
+async function deleteBoard( req, res ) {
+    const result = await BoardService.deleteBoard( req.body.id );
+    if ( result ) {
+        res.status( 204 );
+    } else {
+        res.status( 500 );
+        res.json( { message: "Something went wrong while trying to delete the board!" } );
+    }
+}
+
 module.exports = {
     createBoard,
+    deleteBoard,
 };
