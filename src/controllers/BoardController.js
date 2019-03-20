@@ -1,4 +1,5 @@
 const BoardService = require( "../services/BoardService" );
+const BoardValidator = require( "../validators/BoardValidator" );
 
 /**
  * Creates a board.
@@ -38,6 +39,18 @@ async function deleteBoard( req, res ) {
     }
 }
 
+async function updateBoard( req, res ) {
+    const validatedData = BoardValidator.validateUpdateBody( req.body );
+    if ( validatedData.errors === undefined ) {
+        const result = await BoardService.updateBoard( validatedData.data.id, validatedData.data.body, validatedData.data.columns );
+        res.status( 200 );
+        res.json( { message: "Board updated.", result } );
+    } else {
+        res.status( 500 );
+        res.json( { message: "The board could not be updated!", errors: validatedData.errors } );
+    }
+}
+
 module.exports = {
-    createBoard, deleteBoard, getAll,
+    createBoard, deleteBoard, getAll, updateBoard,
 };

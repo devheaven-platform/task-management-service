@@ -41,6 +41,18 @@ async function deleteBoard( id ) {
     }
 }
 
+async function updateBoard( id, data, columns ) {
+    let parsedData = data;
+    if ( columns.length !== undefined ) {
+        parsedData = {
+            ...data,
+            $push: { columns: { $each: columns } },
+        };
+    }
+    const board = await Board.findOneAndUpdate( { _id: id }, parsedData, { new: true } ).exec();
+    return board;
+}
+
 module.exports = {
-    createBoard, getAll, deleteBoard,
+    createBoard, getAll, deleteBoard, updateBoard,
 };
