@@ -34,12 +34,11 @@ async function deleteBoard( req, res ) {
         return res.status( 401 ).json( { message: "Specify id to delete!" } );
     }
 
+    const result = await BoardService.deleteBoard( req.body.id );
     if ( result ) {
-        await BoardService.deleteBoard( req.body.id );
-        res.status( 204 );
-    } else {
-        res.status( 500 ).json( { message: "Something went wrong while trying to delete the board!" } );
+        return res.status( 204 ).json( { message: "Board was successfully deleted." } );
     }
+    return res.status( 500 ).json( { message: "Something went wrong while trying to delete the board!" } );
 }
 
 /**
@@ -48,21 +47,12 @@ async function deleteBoard( req, res ) {
  * @param {HTTPResponse} res, the response
  */
 async function updateBoard( req, res ) {
-    if ( !req.body.id ) {
-        return res.status( 401 ).json( { message: "Specify the id to update!" } );
+    const { data, errors, updatable } = BoardValidator.validateUpdateBody( req.body );
+    if ( updatable ) {
+        const board = await BoardService.updateBoard( data.id, data.body, data.columns );
+        return res.status( 200 ).json( { message: "Board updated.", board } );
     }
-
-    if ( !req.body.name && !req.body.columns && !req.body.status) {
-        return res.status( 401 ).json( { message: "Specify at least one value to update" } );
-    }
-
-    const validatedData = BoardValidator.validateUpdateBody( req.body );
-    if ( validatedData.errors === undefined ) {
-        const result = await BoardService.updateBoard( validatedData.data.id, validatedData.data.body, validatedData.data.columns );
-        res.status( 200 ).json( { message: "Board updated.", result } );
-    } else {
-        res.status( 500 ).json( { message: "The board could not be updated!", errors: validatedData.errors } );
-    }
+    return res.status( 500 ).json( { message: "The board could not be updated!", errors } );
 }
 
 module.exports = {

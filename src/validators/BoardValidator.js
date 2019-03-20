@@ -34,10 +34,10 @@ const validateUpdateBody = ( input ) => {
         data.body.status = input.status;
     }
 
-    if ( data.id !== null ) {
-        return { data };
+    if ( data.id !== undefined && ( input.name || input.status || input.columns ) ) {
+        return { data, updatable: true };
     }
-    return { errors };
+    return { errors, updatable: false };
 };
 /* eslint-enable complexity */
 
