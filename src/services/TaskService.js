@@ -44,6 +44,19 @@ async function deleteTask( id ) {
     }
 }
 
+/**
+ * Gets all the tasks for a column.
+ * @param {String} columnId, the id of the column.
+ */
+async function getTasksForColumn( columnId ) {
+    try {
+        const tasks = await Task.find( { columnId } ).exec();
+        return tasks;
+    } catch ( e ) {
+        return null;
+    }
+}
+
 module.exports = {
-    createTask, deleteTask,
+    createTask, deleteTask, getTasksForColumn,
 };

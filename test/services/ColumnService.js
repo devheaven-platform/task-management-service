@@ -34,6 +34,20 @@ describe( "ColumnService", () => {
             const column = await service.createColumn( boardId, columnName );
             should.not.exist( column );
         } );
+
+        it( "should get all columns of a board", async () => {
+            const boardId = "5c9a6b81c5325f3df029066d";
+            await service.createColumn( boardId, "Column 1" );
+            await service.createColumn( boardId, "Column 2" );
+
+            const columns = await service.getcolumnsForBoardId( boardId );
+            should.exist( columns );
+            expect( columns.length ).to.equal( 2 );
+            columns.forEach( ( column ) => {
+                should.exist( column.id );
+                expect( column.boardId.toString() ).to.equal( boardId );
+            } );
+        } );
     } );
 
     describe( "/delete", () => {

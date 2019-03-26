@@ -34,6 +34,20 @@ describe( "TaskService", () => {
             const task = await service.createTask( columnId, taskName );
             should.not.exist( task );
         } );
+
+        it( "should get all tasks of a column", async () => {
+            const columnId = "5c9a6b81c5325f3df029066d";
+            await service.createTask( columnId, "Column 1" );
+            await service.createTask( columnId, "Column 2" );
+
+            const tasks = await service.getTasksForColumn( columnId );
+            should.exist( tasks );
+            expect( tasks.length ).to.equal( 2 );
+            tasks.forEach( ( task ) => {
+                should.exist( task.id );
+                expect( task.columnId.toString() ).to.equal( columnId );
+            } );
+        } );
     } );
 
     describe( "/delete", () => {

@@ -39,6 +39,23 @@ async function deleteColumn( req, res ) {
     return res.status( 500 ).json( { message: "Something went wrong while trying to delete the column!" } );
 }
 
+/**
+ * Retrieves all the columns for the given board id.
+ * @param {HTTPRequest} req, the request
+ * @param {HTTPResponse} res, the response
+ */
+async function getColumnsForBoard( req, res ) {
+    if ( !req.body.boardId ) {
+        return res.status( 400 ).json( { message: "Specify a board id1" } );
+    }
+
+    const result = await ColumnService.getcolumnsForBoardId( req.body.boardId );
+    if ( result ) {
+        return res.status( 200 ).json( { message: "Column was successfully deleted.", result } );
+    }
+    return res.status( 500 ).json( { message: "Something went wrong while trying to get the columns for the board!" } );
+}
+
 module.exports = {
-    createColumn, deleteColumn,
+    createColumn, deleteColumn, getColumnsForBoard,
 };
