@@ -1,4 +1,5 @@
 const BoardService = require( "../services/BoardService" );
+const BoardValidator = require( "../validators/BoardValidator" );
 
 /**
  * Creates a board.
@@ -24,20 +25,36 @@ async function getAll( req, res ) {
 }
 
 /**
- *
+ * Removes a board with the given id.
  * @param {HTTPRequest} req, the request
  * @param {HTTPResponse} res, the response
  */
 async function deleteBoard( req, res ) {
+    if ( !req.body.id ) {
+        return res.status( 401 ).json( { message: "Specify id to delete!" } );
+    }
+
     const result = await BoardService.deleteBoard( req.body.id );
     if ( result ) {
-        res.status( 204 );
-    } else {
-        res.status( 500 );
-        res.json( { message: "Something went wrong while trying to delete the board!" } );
+        return res.status( 204 ).json( { message: "Board was successfully deleted." } );
     }
+    return res.status( 500 ).json( { message: "Something went wrong while trying to delete the board!" } );
+}
+
+/**
+ * Updates the board with the given values.
+ * @param {HTTPRequest} req, the request
+ * @param {HTTPResponse} res, the response
+ */
+async function updateBoard( req, res ) {
+    const { data, errors, updatable } = BoardValidator.validateUpdateBody( req.body );
+    if ( updatable ) {
+        const board = await BoardService.updateBoard( data.id, data.body, data.columns );
+        return res.status( 200 ).json( { message: "Board updated.", board } );
+    }
+    return res.status( 500 ).json( { message: "The board could not be updated!", errors } );
 }
 
 module.exports = {
-    createBoard, deleteBoard, getAll,
+    createBoard, deleteBoard, getAll, updateBoard,
 };
