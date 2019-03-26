@@ -11,12 +11,16 @@ async function createBoard( projectId, name ) {
     }
     if ( !projectId ) return null;
 
-    const board = new Board();
-    board.projectId = projectId;
-    board.name = boardName;
-    await board.save();
+    try {
+        const board = new Board();
+        board.projectId = projectId;
+        board.name = boardName;
+        await board.save();
 
-    return board;
+        return board;
+    } catch ( e ) {
+        return null;
+    }
 }
 
 /**
@@ -24,8 +28,12 @@ async function createBoard( projectId, name ) {
  * @param {String} projectId, the id of the project.
  */
 async function getAll( projectId ) {
-    const boards = await Board.find( { projectId } ).exec();
-    return boards;
+    try {
+        const boards = await Board.find( { projectId } ).exec();
+        return boards;
+    } catch ( e ) {
+        return null;
+    }
 }
 
 /**
@@ -34,7 +42,7 @@ async function getAll( projectId ) {
  */
 async function deleteBoard( id ) {
     try {
-        if ( id !== undefined ) {
+        if ( id ) {
             await Board.deleteOne( { _id: id } ).exec();
             return true;
         }
@@ -47,19 +55,19 @@ async function deleteBoard( id ) {
 /**
  * Update the board with the given values.
  * @param {String} id, the id of the board.
- * @param {*} data, the data for updating the board.
- * @param {String[]} columns, the columns to add to the board.
+ * @param { } data, the new values of the board.
  */
-async function updateBoard( id, data, columns ) {
-    let parsedData = data;
-    if ( columns !== undefined && columns.length > 0 ) {
-        parsedData = {
-            ...data,
-            $push: { columns: { $each: columns } },
-        };
+async function updateBoard( id, data ) {
+    try {
+        if ( !data ) {
+            return null;
+        }
+
+        const board = await Board.findOneAndUpdate( { _id: id }, data, { new: true } ).exec();
+        return board;
+    } catch ( e ) {
+        return null;
     }
-    const board = await Board.findOneAndUpdate( { _id: id }, parsedData, { new: true } ).exec();
-    return board;
 }
 
 module.exports = {

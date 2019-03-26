@@ -22,8 +22,12 @@ app.use( cors() );
 
 // Routes
 const boardRoutes = require( "./routes/BoardRoutes" );
+const columnRoutes = require( "./routes/ColumnRoutes" );
+const taskRoutes = require( "./routes/TaskRoutes" );
 
 app.use( "/board", boardRoutes );
+app.use( "/column", columnRoutes );
+app.use( "/task", taskRoutes );
 
 // Connect database
 mongoose.connect( mongoURI + mongoDB, { useNewUrlParser: true, useCreateIndex: true, useFindAndModify: false } ).then( () => logger.info( "MongoDB connected" ) ).catch( error => logger.error( error.stack ) );
