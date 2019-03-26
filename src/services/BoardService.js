@@ -34,7 +34,7 @@ async function getAll( projectId ) {
  */
 async function deleteBoard( id ) {
     try {
-        if ( id !== undefined ) {
+        if ( id ) {
             await Board.deleteOne( { _id: id } ).exec();
             return true;
         }
@@ -47,18 +47,20 @@ async function deleteBoard( id ) {
 /**
  * Update the board with the given values.
  * @param {String} id, the id of the board.
- * @param {*} data, the data for updating the board.
- * @param {String[]} columns, the columns to add to the board.
+ * @param {String} name, the new name for the board.
+ * @param {String} status, the new status for the board.
  */
-async function updateBoard( id, data, columns ) {
-    let parsedData = data;
-    if ( columns !== undefined && columns.length > 0 ) {
-        parsedData = {
-            ...data,
-            $push: { columns: { $each: columns } },
-        };
+async function updateBoard( id, name, status ) {
+    const newData = {};
+    if ( name ) {
+        newData.name = name;
     }
-    const board = await Board.findOneAndUpdate( { _id: id }, parsedData, { new: true } ).exec();
+
+    if ( status ) {
+        newData.status = status;
+    }
+
+    const board = await Board.findOneAndUpdate( { _id: id }, newData, { new: true } ).exec();
     return board;
 }
 

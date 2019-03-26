@@ -22,8 +22,11 @@ async function createColumn( boardId, name ) {
  */
 async function deleteColumn( id ) {
     try {
-        await Column.deleteOne( { _id: id } ).exec();
-        return true;
+        if ( id ) {
+            await Column.deleteOne( { _id: id } ).exec();
+            return true;
+        }
+        return false;
     } catch ( e ) {
         return false;
     }

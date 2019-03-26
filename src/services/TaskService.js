@@ -31,8 +31,11 @@ async function createTask( columnId, name, description ) {
  */
 async function deleteTask( id ) {
     try {
-        await Task.deleteOne( { _id: id } ).exec();
-        return true;
+        if ( id ) {
+            await Task.deleteOne( { _id: id } ).exec();
+            return true;
+        }
+        return false;
     } catch ( e ) {
         return false;
     }

@@ -29,13 +29,15 @@ async function createTask( req, res ) {
  * @param {HTTPResponse} res, the response
  */
 async function deleteTask( req, res ) {
+    if ( !req.body.id ) {
+        return res.status( 400 ).json( { message: "Specify id to delete!" } );
+    }
+
     const result = await TaskService.deleteTask( req.body.id );
     if ( result ) {
-        res.status( 204 );
-    } else {
-        res.status( 500 );
-        res.json( { message: "Something went wrong while trying to delete the task!" } );
+        return res.status( 204 );
     }
+    return res.status( 500 ).json( { message: "Something went wrong while trying to delete the task!" } );
 }
 
 module.exports = {

@@ -18,7 +18,7 @@ describe( "BoardController", () => {
             chai.request( app )
                 .post( "/board/create" ).send( req )
                 .end( ( err, res ) => {
-                    res.should.have.status( 401 );
+                    res.should.have.status( 400 );
                     done();
                 } );
         } );
@@ -75,12 +75,12 @@ describe( "BoardController", () => {
                 } );
         } );
 
-        it( "should return status 401 if no board could be deleted.", ( done ) => {
+        it( "should return status 400 if no board could be deleted.", ( done ) => {
             const req = { id: "" };
             chai.request( app )
                 .delete( "/board/delete" ).send( req )
                 .end( ( err, res ) => {
-                    res.should.have.status( 401 );
+                    res.should.have.status( 400 );
                     done();
                 } );
         } );
@@ -93,7 +93,7 @@ describe( "BoardController", () => {
                 .post( "/board/create" ).send( req )
                 .end( ( err, res ) => {
                     const updateReq = {
-                        id: res.body.board.id, name: "NewName", status: "Closed", columns: [ "Column1", "Column2" ],
+                        id: res.body.board.id, name: "NewName", status: "Closed",
                     };
                     chai.request( app )
                         .put( "/board/update" ).send( updateReq )
@@ -101,7 +101,6 @@ describe( "BoardController", () => {
                             upRes.should.have.status( 200 );
                             upRes.body.board.name.should.be.equal( updateReq.name );
                             upRes.body.board.status.should.be.equal( updateReq.status );
-                            upRes.body.board.columns.length.should.be.equal( 2 );
                             done();
                         } );
                 } );
@@ -143,43 +142,24 @@ describe( "BoardController", () => {
                 } );
         } );
 
-        it( "should return status 200 if the board columns were updated", ( done ) => {
-            const req = { projectId: "1", name: "boardName" };
-            chai.request( app )
-                .post( "/board/create" ).send( req )
-                .end( ( err, res ) => {
-                    const updateReq = {
-                        id: res.body.board.id, columns: [ "Column1", "Column2" ],
-                    };
-                    chai.request( app )
-                        .put( "/board/update" ).send( updateReq )
-                        .end( ( upErr, upRes ) => {
-                            upRes.should.have.status( 200 );
-                            upRes.body.board.columns.length.should.be.equal( 2 );
-                            done();
-                        } );
-                } );
-        } );
-
-        it( "should return status 500 if the update request did not have an id", ( done ) => {
+        it( "should return status 400 if the update request did not have an id", ( done ) => {
             const req = { projectId: "1", name: "boardName" };
             chai.request( app )
                 .post( "/board/create" ).send( req )
                 .end( () => {
                     const updateReq = {
-                        name: "NewName", status: "Closed", columns: [ "Column1", "Column2" ],
+                        name: "NewName", status: "Closed",
                     };
                     chai.request( app )
                         .put( "/board/update" ).send( updateReq )
                         .end( ( upErr, upRes ) => {
-                            upRes.should.have.status( 500 );
-                            should.exist( upRes.body.errors.id );
+                            upRes.should.have.status( 400 );
                             done();
                         } );
                 } );
         } );
 
-        it( "should return status 500 if the update request did not have an body", ( done ) => {
+        it( "should return status 400 if the update request did not have any values", ( done ) => {
             const req = { projectId: "1", name: "boardName" };
             chai.request( app )
                 .post( "/board/create" ).send( req )
@@ -190,10 +170,7 @@ describe( "BoardController", () => {
                     chai.request( app )
                         .put( "/board/update" ).send( updateReq )
                         .end( ( upErr, upRes ) => {
-                            upRes.should.have.status( 500 );
-                            should.exist( upRes.body.errors.name );
-                            should.exist( upRes.body.errors.columns );
-                            should.exist( upRes.body.errors.status );
+                            upRes.should.have.status( 400 );
                             done();
                         } );
                 } );
