@@ -35,7 +35,7 @@ async function deleteTask( req, res ) {
 
     const result = await TaskService.deleteTask( req.body.id );
     if ( result ) {
-        return res.status( 204 );
+        return res.status( 204 ).json( { message: "Task was successfully deleted." } );
     }
     return res.status( 500 ).json( { message: "Something went wrong while trying to delete the task!" } );
 }

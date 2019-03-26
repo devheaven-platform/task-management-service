@@ -29,13 +29,14 @@ async function createColumn( req, res ) {
  * @param {HTTPResponse} res, the response
  */
 async function deleteColumn( req, res ) {
+    if ( !req.body.id ) {
+        return res.status( 400 ).json( { message: "Specify id to delete!" } );
+    }
     const result = await ColumnService.deleteColumn( req.body.id );
     if ( result ) {
-        res.status( 204 );
-    } else {
-        res.status( 500 );
-        res.json( { message: "Something went wrong while trying to delete the column!" } );
+        return res.status( 204 ).json( { message: "Column was successfully deleted." } );
     }
+    return res.status( 500 ).json( { message: "Something went wrong while trying to delete the column!" } );
 }
 
 module.exports = {

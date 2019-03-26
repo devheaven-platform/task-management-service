@@ -8,12 +8,16 @@ async function createColumn( boardId, name ) {
     if ( !name ) return null;
     if ( !boardId ) return null;
 
-    const column = new Column();
-    column.boardId = boardId;
-    column.name = name;
-    await column.save();
+    try {
+        const column = new Column();
+        column.boardId = boardId;
+        column.name = name;
+        await column.save();
 
-    return column;
+        return column;
+    } catch ( e ) {
+        return null;
+    }
 }
 
 /**

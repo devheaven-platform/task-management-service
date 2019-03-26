@@ -11,12 +11,16 @@ async function createBoard( projectId, name ) {
     }
     if ( !projectId ) return null;
 
-    const board = new Board();
-    board.projectId = projectId;
-    board.name = boardName;
-    await board.save();
+    try {
+        const board = new Board();
+        board.projectId = projectId;
+        board.name = boardName;
+        await board.save();
 
-    return board;
+        return board;
+    } catch ( e ) {
+        return null;
+    }
 }
 
 /**
@@ -24,8 +28,12 @@ async function createBoard( projectId, name ) {
  * @param {String} projectId, the id of the project.
  */
 async function getAll( projectId ) {
-    const boards = await Board.find( { projectId } ).exec();
-    return boards;
+    try {
+        const boards = await Board.find( { projectId } ).exec();
+        return boards;
+    } catch ( e ) {
+        return null;
+    }
 }
 
 /**
@@ -60,8 +68,12 @@ async function updateBoard( id, name, status ) {
         newData.status = status;
     }
 
-    const board = await Board.findOneAndUpdate( { _id: id }, newData, { new: true } ).exec();
-    return board;
+    try {
+        const board = await Board.findOneAndUpdate( { _id: id }, newData, { new: true } ).exec();
+        return board;
+    } catch ( e ) {
+        return null;
+    }
 }
 
 module.exports = {

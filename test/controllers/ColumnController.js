@@ -49,6 +49,33 @@ describe( "ColumnController", () => {
     } );
 
     describe( "/delete", () => {
+        it( "should return status 204 if a column was deleted", ( done ) => {
+            const req = { boardId: "5c921b99bf81ef15fc6eb29a", name: "columnName" };
+            chai.request( app )
+                .post( "/column/create" ).send( req )
+                .end( ( err, res ) => {
+                    const deleteReq = { id: res.body.column.id };
+                    chai.request( app )
+                        .delete( "/column/delete" ).send( deleteReq )
+                        .end( ( deleteErr, deleteRes ) => {
+                            deleteRes.should.have.status( 204 );
+                            done();
+                        } );
+                } );
+        } );
 
+        it( "should return status 400 if the id was not specified", ( done ) => {
+            const req = { boardId: "5c921b99bf81ef15fc6eb29a", name: "columnName" };
+            chai.request( app )
+                .post( "/column/create" ).send( req )
+                .end( () => {
+                    chai.request( app )
+                        .delete( "/column/delete" ).send( {} )
+                        .end( ( deleteErr, deleteRes ) => {
+                            deleteRes.should.have.status( 400 );
+                            done();
+                        } );
+                } );
+        } );
     } );
 } );

@@ -8,7 +8,6 @@ const Task = require( "../models/Task" );
  */
 async function createTask( columnId, name, description ) {
     if ( !columnId ) return null;
-
     if ( !name ) return null;
 
     let taskDescription = "";
@@ -16,13 +15,17 @@ async function createTask( columnId, name, description ) {
         taskDescription = description;
     }
 
-    const task = new Task();
-    task.columnId = columnId;
-    task.name = name;
-    task.description = taskDescription;
-    await task.save();
+    try {
+        const task = new Task();
+        task.columnId = columnId;
+        task.name = name;
+        task.description = taskDescription;
+        await task.save();
 
-    return task;
+        return task;
+    } catch ( e ) {
+        return null;
+    }
 }
 
 /**

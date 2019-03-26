@@ -74,6 +74,33 @@ describe( "TaskController", () => {
     } );
 
     describe( "/delete", () => {
+        it( "should return status 204 if a task was deleted", ( done ) => {
+            const req = { columnId: "5c921b99bf81ef15fc6eb29a", name: "taskName", description: "taskDescription" };
+            chai.request( app )
+                .post( "/task/create" ).send( req )
+                .end( ( err, res ) => {
+                    const deleteReq = { id: res.body.task.id };
+                    chai.request( app )
+                        .delete( "/task/delete" ).send( deleteReq )
+                        .end( ( deleteErr, deleteRes ) => {
+                            deleteRes.should.have.status( 204 );
+                            done();
+                        } );
+                } );
+        } );
 
+        it( "should return status 400 if the id was not specified", ( done ) => {
+            const req = { columnId: "5c921b99bf81ef15fc6eb29a", name: "taskName", description: "taskDescription" };
+            chai.request( app )
+                .post( "/task/create" ).send( req )
+                .end( () => {
+                    chai.request( app )
+                        .delete( "/task/delete" ).send( {} )
+                        .end( ( deleteErr, deleteRes ) => {
+                            deleteRes.should.have.status( 400 );
+                            done();
+                        } );
+                } );
+        } );
     } );
 } );
