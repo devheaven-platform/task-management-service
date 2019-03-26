@@ -3,24 +3,23 @@ const mongoose = require( "mongoose" );
 /**
  * The mongoose schema for Board.
  */
-const boardSchema = new mongoose.Schema( {
+const taskSchema = new mongoose.Schema( {
     name: {
         type: String,
         required: true,
     },
-    projectId: {
-        type: String,
+    columnId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Column",
         required: true,
     },
-    status: {
+    description: {
         type: String,
-        enum: [ "Open", "Closed" ],
-        default: "Open",
     },
 } );
 
 /* eslint-disable no-underscore-dangle, no-param-reassign */
-boardSchema.set( "toJSON", {
+taskSchema.set( "toJSON", {
     virtuals: true,
     versionKey: false,
     transform: ( doc, ret ) => { delete ret._id; },
@@ -30,5 +29,5 @@ boardSchema.set( "toJSON", {
 /**
  * The model "Board" derived from the boardSchema.
  */
-const model = mongoose.model( "Board", boardSchema );
+const model = mongoose.model( "Task", taskSchema );
 module.exports = model;
