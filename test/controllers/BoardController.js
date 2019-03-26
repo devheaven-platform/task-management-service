@@ -13,6 +13,16 @@ describe( "BoardController", () => {
     afterEach( () => mongoUnit.drop() );
 
     describe( "/create", () => {
+        it( "should return status 400 if no projectId is specified", ( done ) => {
+            const req = { };
+            chai.request( app )
+                .post( "/board/create" ).send( req )
+                .end( ( err, res ) => {
+                    res.should.have.status( 401 );
+                    done();
+                } );
+        } );
+
         it( "should create a board", ( done ) => {
             const req = { projectId: "1", name: "boardName" };
             chai.request( app )
@@ -54,8 +64,8 @@ describe( "BoardController", () => {
             const req = { projectId: "1", name: "boardName" };
             chai.request( app )
                 .post( "/board/create" ).send( req )
-                .end( ( cerr, cres ) => {
-                    const deleteReq = { id: cres.body.board.id };
+                .end( ( createErr, createRes ) => {
+                    const deleteReq = { id: createRes.body.board.id };
                     chai.request( app )
                         .delete( "/board/delete" ).send( deleteReq )
                         .end( ( err, res ) => {
@@ -190,14 +200,3 @@ describe( "BoardController", () => {
         } );
     } );
 } );
-
-    it("should return status 400 if no projectId is specified", (done) => {
-        const req = { };
-        chai.request(app)
-            .post("/board/create").send(req)
-            .end((err, res) => {
-                res.should.have.status(401);
-                done();
-            });
-    });
-});
