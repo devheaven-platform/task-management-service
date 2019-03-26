@@ -6,12 +6,21 @@ const ColumnService = require( "../services/ColumnService" );
  * @param {HTTPResponse} res, the response
  */
 async function createColumn( req, res ) {
-    const board = await ColumnService.createColumn( req.body.boardId, req.body.name );
     if ( !req.body.boardId ) {
-        return res.status( 403 ).json( { message: "Specify boardId" } );
+        return res.status( 400 ).json( { message: "Specify boardId" } );
     }
 
-    return res.json( { message: "Created the column!", board } );
+    if ( !req.body.name ) {
+        return res.status( 400 ).json( { message: "Specify name" } );
+    }
+
+    const column = await ColumnService.createColumn( req.body.boardId, req.body.name );
+
+    if ( column ) {
+        res.status( 201 );
+        return res.json( { message: "Created the column!", column } );
+    }
+    return res.status( 500 ).json( { message: "Something went wrong trying to create the column." } );
 }
 
 /**
@@ -24,7 +33,7 @@ async function deleteColumn( req, res ) {
     if ( result ) {
         res.status( 204 );
     } else {
-        res.status( 403 );
+        res.status( 500 );
         res.json( { message: "Something went wrong while trying to delete the column!" } );
     }
 }

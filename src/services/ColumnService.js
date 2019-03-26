@@ -5,15 +5,12 @@ const Column = require( "../models/Column" );
  * @param {String} name, the name of the column
  */
 async function createColumn( boardId, name ) {
-    let columnName = "Default";
-    if ( name ) {
-        columnName = name;
-    }
+    if ( !name ) return null;
     if ( !boardId ) return null;
 
     const column = new Column();
     column.boardId = boardId;
-    column.name = columnName;
+    column.name = name;
     await column.save();
 
     return column;
