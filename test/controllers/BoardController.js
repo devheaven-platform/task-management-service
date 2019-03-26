@@ -18,7 +18,7 @@ describe( "BoardController", () => {
             chai.request( app )
                 .post( "/board/create" ).send( req )
                 .end( ( err, res ) => {
-                    res.should.have.status( 200 );
+                    res.should.have.status( 201 );
                     res.body.message.should.be.equal( "Created board!" );
                     res.body.board.name.should.be.equal( "boardName" );
                     done();
@@ -30,7 +30,7 @@ describe( "BoardController", () => {
             chai.request( app )
                 .post( "/board/create" ).send( req )
                 .end( ( err, res ) => {
-                    res.should.have.status( 200 );
+                    res.should.have.status( 201 );
                     res.body.message.should.be.equal( "Created board!" );
                     should.exist( res.body.board.name );
                     should.exist( res.body.board.id );
@@ -38,12 +38,12 @@ describe( "BoardController", () => {
                 } );
         } );
 
-        it( "should return status 401 if no projectId is specified", ( done ) => {
+        it( "should return status 400 if no projectId is specified", ( done ) => {
             const req = { };
             chai.request( app )
                 .post( "/board/create" ).send( req )
                 .end( ( err, res ) => {
-                    res.should.have.status( 401 );
+                    res.should.have.status( 400 );
                     done();
                 } );
         } );

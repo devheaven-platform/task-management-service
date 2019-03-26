@@ -6,22 +6,19 @@ const Task = require( "../models/Task" );
  * @param name, The name of the task
  * @param description, The description of the task
  */
-async function createColumn( columnId, name, description ) {
+async function createTask( columnId, name, description ) {
     if ( !columnId ) return null;
 
-    let taskName = "Default";
-    if ( name ) {
-        taskName = name;
-    }
+    if ( !name ) return null;
 
     let taskDescription = "";
-    if ( name ) {
+    if ( description ) {
         taskDescription = description;
     }
 
     const task = new Task();
     task.columnId = columnId;
-    task.name = taskName;
+    task.name = name;
     task.description = taskDescription;
     await task.save();
 
@@ -32,7 +29,7 @@ async function createColumn( columnId, name, description ) {
  * Deletes a board from the database.
  * @param {String} id, the id of the board.
  */
-async function deleteColumn( id ) {
+async function deleteTask( id ) {
     try {
         await Task.deleteOne( { _id: id } ).exec();
         return true;
@@ -42,5 +39,5 @@ async function deleteColumn( id ) {
 }
 
 module.exports = {
-    createColumn, deleteColumn,
+    createTask, deleteTask,
 };

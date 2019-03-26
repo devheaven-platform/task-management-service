@@ -6,13 +6,21 @@ const TaskService = require( "../services/TaskService" );
  * @param {HTTPResponse} res, the response
  */
 async function createTask( req, res ) {
-    const board = await TaskService.createTask( req.body.columnId,
-        req.body.name, req.body.description );
-    if ( !req.body.boardId ) {
-        return res.status( 403 ).json( { message: "Specify columnId" } );
+    if ( !req.body.columnId ) {
+        return res.status( 400 ).json( { message: "Specify columnId" } );
     }
 
-    return res.json( { message: "Created the task!", board } );
+    if ( !req.body.name ) {
+        return res.status( 400 ).json( { message: "Specify name" } );
+    }
+
+    const task = await TaskService.createTask( req.body.columnId,
+        req.body.name, req.body.description );
+    if ( task ) {
+        res.status( 201 );
+        return res.json( { message: "Created the task!", task } );
+    }
+    return res.status( 500 ).json( { message: "Something went wrong while trying to create the task." } );
 }
 
 /**
@@ -25,7 +33,7 @@ async function deleteTask( req, res ) {
     if ( result ) {
         res.status( 204 );
     } else {
-        res.status( 403 );
+        res.status( 500 );
         res.json( { message: "Something went wrong while trying to delete the task!" } );
     }
 }
