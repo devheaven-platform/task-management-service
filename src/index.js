@@ -23,7 +23,7 @@ app.use( cors() );
 //Routes
 const boardRoutes = require("./routes/BoardRoutes");
 app.use("/board", boardRoutes);
-
+console.log(mongoURI + mongoDB)
 // Connect database
 mongoose
     .connect( mongoURI + mongoDB, { useNewUrlParser: true, useCreateIndex: true, useFindAndModify: false } )
