@@ -55,4 +55,52 @@ describe( "BoardService", () => {
             expect( result ).to.equal( false );
         } );
     } );
+
+    describe( "/update", () => {
+        let board;
+        beforeEach( async () => {
+            const projectId = 1;
+            board = await service.createBoard( projectId, "Board 1" );
+        } );
+
+        it( "Should update a board", async () => {
+            expect( board ).to.not.equal( null );
+            const newValues = { name: "New name", status: "Open" };
+            const result = await service.updateBoard( board.id, newValues );
+            should.exist( result );
+            expect( result.name ).to.equal( newValues.name );
+            expect( result.status ).to.equal( newValues.status );
+        } );
+
+        it( "Should update a board name only", async () => {
+            expect( board ).to.not.equal( null );
+            const newValues = { name: "New name" };
+            const result = await service.updateBoard( board.id, newValues );
+            should.exist( result );
+            expect( result.name ).to.equal( newValues.name );
+            expect( result.status ).to.equal( board.status );
+        } );
+
+        it( "Should update a board status only", async () => {
+            expect( board ).to.not.equal( null );
+            const newValues = { status: "Closed" };
+            const result = await service.updateBoard( board.id, newValues );
+            should.exist( result );
+            expect( result.name ).to.equal( board.name );
+            expect( result.status ).to.equal( newValues.status );
+        } );
+
+        it( "Should not update a board without a board id", async () => {
+            expect( board ).to.not.equal( null );
+            const newValues = { name: "New name", status: "Open" };
+            const result = await service.updateBoard( "badid", newValues );
+            should.not.exist( result );
+        } );
+
+        it( "Should not update a board without a value to update", async () => {
+            expect( board ).to.not.equal( null );
+            const result = await service.updateBoard( board.id );
+            should.not.exist( result );
+        } );
+    } );
 } );

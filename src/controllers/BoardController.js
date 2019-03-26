@@ -56,7 +56,8 @@ async function updateBoard( req, res ) {
         return res.status( 400 ).json( { message: "Specify the new changes to add!" } );
     }
 
-    const board = await BoardService.updateBoard( req.body.id, req.body.name, req.body.status );
+    const board = await BoardService
+        .updateBoard( req.body.id, { name: req.body.name, status: req.body.status } );
     if ( board ) {
         return res.status( 200 ).json( { message: "Board updated.", board } );
     }

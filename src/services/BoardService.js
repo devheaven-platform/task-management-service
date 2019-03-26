@@ -55,21 +55,15 @@ async function deleteBoard( id ) {
 /**
  * Update the board with the given values.
  * @param {String} id, the id of the board.
- * @param {String} name, the new name for the board.
- * @param {String} status, the new status for the board.
+ * @param { } data, the new values of the board.
  */
-async function updateBoard( id, name, status ) {
-    const newData = {};
-    if ( name ) {
-        newData.name = name;
-    }
-
-    if ( status ) {
-        newData.status = status;
-    }
-
+async function updateBoard( id, data ) {
     try {
-        const board = await Board.findOneAndUpdate( { _id: id }, newData, { new: true } ).exec();
+        if ( !data ) {
+            return null;
+        }
+
+        const board = await Board.findOneAndUpdate( { _id: id }, data, { new: true } ).exec();
         return board;
     } catch ( e ) {
         return null;
