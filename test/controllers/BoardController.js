@@ -191,7 +191,7 @@ describe( "BoardController", () => {
     } );
 } );
 
-    it("should return status 401 if no projectId is specified", (done) => {
+    it("should return status 400 if no projectId is specified", (done) => {
         const req = { };
         chai.request(app)
             .post("/board/create").send(req)
