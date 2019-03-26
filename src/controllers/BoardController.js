@@ -56,5 +56,5 @@ async function updateBoard( req, res ) {
 }
 
 module.exports = {
-    createBoard, deleteBoard, getAll, updateBoard,
+    createBoard, getAll, updateBoard, deleteBoard,
 };

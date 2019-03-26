@@ -190,3 +190,14 @@ describe( "BoardController", () => {
         } );
     } );
 } );
+
+    it("should return status 400 if no projectId is specified", (done) => {
+        const req = { };
+        chai.request(app)
+            .post("/board/create").send(req)
+            .end((err, res) => {
+                res.should.have.status(401);
+                done();
+            });
+    });
+});

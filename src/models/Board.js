@@ -1,9 +1,9 @@
-const mongoose = require( "mongoose" );
+const mongoose = require("mongoose");
 
 /**
  * The mongoose schema for Board.
  */
-const boardSchema = new mongoose.Schema( {
+const boardSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true,
@@ -14,13 +14,17 @@ const boardSchema = new mongoose.Schema( {
     },
     columns: [ {
         type: String,
-    } ],
+        required: true
+    },
+    columns: [{
+        type: String,
+    }],
     status: {
         type: String,
-        enum: [ "Open", "Closed" ],
+        enum: ["Open", "Closed"],
         default: "Open",
     },
-} );
+});
 
 /* eslint-disable no-underscore-dangle, no-param-reassign */
 boardSchema.set( "toJSON", {
@@ -33,5 +37,5 @@ boardSchema.set( "toJSON", {
 /**
  * The model "Board" derived from the boardSchema.
  */
-const model = mongoose.model( "Board", boardSchema );
+const model = mongoose.model("Board", boardSchema);
 module.exports = model;
