@@ -54,9 +54,8 @@ describe( "ColumnController", () => {
             chai.request( app )
                 .post( "/column/create" ).send( req )
                 .end( ( err, res ) => {
-                    const deleteReq = { id: res.body.column.id };
                     chai.request( app )
-                        .delete( "/column/delete" ).send( deleteReq )
+                        .delete( `/column/delete${ res.body.column.id }` ).send()
                         .end( ( deleteErr, deleteRes ) => {
                             deleteRes.should.have.status( 204 );
                             done();
@@ -70,7 +69,7 @@ describe( "ColumnController", () => {
                 .post( "/column/create" ).send( req )
                 .end( () => {
                     chai.request( app )
-                        .delete( "/column/delete" ).send( {} )
+                        .delete( "/column/delete/" ).send()
                         .end( ( deleteErr, deleteRes ) => {
                             deleteRes.should.have.status( 400 );
                             done();
