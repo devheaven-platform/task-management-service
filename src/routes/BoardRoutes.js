@@ -3,9 +3,9 @@ const boardController = require( "../controllers/BoardController" );
 
 const router = express.Router();
 
+router.get( "/getAll/:projectId", boardController.getAll );
 router.post( "/create", boardController.createBoard );
-router.delete( "/delete", boardController.deleteBoard );
 router.put( "/update", boardController.updateBoard );
-router.get( "/getAll", boardController.getAll );
+router.delete( "/delete/:id", boardController.deleteBoard );
 
 module.exports = router;

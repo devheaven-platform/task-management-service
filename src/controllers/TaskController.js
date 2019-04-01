@@ -29,7 +29,7 @@ async function createTask( req, res ) {
  * @param {HTTPResponse} res, the response
  */
 async function deleteTask( req, res ) {
-    if ( !req.body.id ) {
+    if ( !req.params.id ) {
         return res.status( 400 ).json( { message: "Specify id to delete!" } );
     }
 
@@ -46,13 +46,13 @@ async function deleteTask( req, res ) {
  * @param {HTTPResponse} res, the response
  */
 async function getTasksForColumn( req, res ) {
-    if ( !req.body.columnId ) {
+    if ( !req.params.columnId ) {
         return res.status( 400 ).json( { message: "Specify a column id!" } );
     }
 
-    const result = await TaskService.getTasksForColumn( req.body.columnId );
+    const result = await TaskService.getTasksForColumn( req.params.columnId );
     if ( result ) {
-        return res.status( 200 ).json( { message: "Column was successfully deleted.", result } );
+        return res.status( 200 ).json( { message: "Tasks were successfully retrieved.", result } );
     }
     return res.status( 500 ).json( { message: "Something went wrong while trying to get the columns for the board!" } );
 }

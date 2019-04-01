@@ -45,13 +45,13 @@ async function deleteColumn( req, res ) {
  * @param {HTTPResponse} res, the response
  */
 async function getColumnsForBoard( req, res ) {
-    if ( !req.body.boardId ) {
+    if ( !req.params.boardId ) {
         return res.status( 400 ).json( { message: "Specify a board id1" } );
     }
 
-    const result = await ColumnService.getcolumnsForBoardId( req.body.boardId );
+    const result = await ColumnService.getcolumnsForBoardId( req.params.boardId );
     if ( result ) {
-        return res.status( 200 ).json( { message: "Column was successfully deleted.", result } );
+        return res.status( 200 ).json( { message: "Columns were successfully retrieved.", result } );
     }
     return res.status( 500 ).json( { message: "Something went wrong while trying to get the columns for the board!" } );
 }
