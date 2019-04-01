@@ -79,9 +79,8 @@ describe( "TaskController", () => {
             chai.request( app )
                 .post( "/task/create" ).send( req )
                 .end( ( err, res ) => {
-                    const deleteReq = { id: res.body.task.id };
                     chai.request( app )
-                        .delete( "/task/delete" ).send( deleteReq )
+                        .delete( `/task/delete${ res.body.task.id }` ).send()
                         .end( ( deleteErr, deleteRes ) => {
                             deleteRes.should.have.status( 204 );
                             done();
@@ -95,7 +94,7 @@ describe( "TaskController", () => {
                 .post( "/task/create" ).send( req )
                 .end( () => {
                     chai.request( app )
-                        .delete( "/task/delete" ).send( {} )
+                        .delete( "/task/delete/" ).send( {} )
                         .end( ( deleteErr, deleteRes ) => {
                             deleteRes.should.have.status( 400 );
                             done();
