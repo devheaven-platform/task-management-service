@@ -80,6 +80,13 @@ describe( "BoardService", () => {
             expect( result.name ).to.equal( newValues.name );
             expect( result.status ).to.equal( board.status );
         } );
+        it( "Should update a board's archived status only", async () => {
+            expect( board ).to.not.equal( null );
+            const newValues = { archived: true };
+            const result = await service.updateBoard( board.id, newValues );
+            should.exist( result );
+            expect( result.archived ).to.equal( newValues.archived );
+        } );
 
         it( "Should update a board status only", async () => {
             expect( board ).to.not.equal( null );

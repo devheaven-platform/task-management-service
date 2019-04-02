@@ -17,6 +17,11 @@ const boardSchema = new mongoose.Schema( {
         enum: [ "Open", "Closed" ],
         default: "Open",
     },
+    archived: {
+        type: Boolean,
+        required: true,
+        default: false,
+    },
 } );
 
 /* eslint-disable no-underscore-dangle, no-param-reassign */
