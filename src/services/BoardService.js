@@ -24,11 +24,11 @@ async function createBoard( projectId, name ) {
 }
 
 /**
- *
- * @param {*} boardId
+ * Gets a board with the arrays populated.
+ * @param {*} id, the id of the board
  */
-async function getBoardById( boardId ) {
-    const board = await Board.findById( boardId ).populate( {
+async function getBoardById( id ) {
+    const board = await Board.findById( id ).populate( {
         path: "columns",
         populate: { path: "tasks" },
     } ).exec();
