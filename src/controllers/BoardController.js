@@ -16,10 +16,10 @@ async function createBoard( req, res ) {
 }
 
 async function getAll( req, res ) {
-    if ( !req.params.projectId ) {
+    if ( !req.params.id ) {
         return res.status( 400 ).json( { message: "Specify projectId" } );
     }
-    const boards = await BoardService.getAll( req.params.projectId );
+    const boards = await BoardService.getAll( req.params.id );
 
     res.status( 200 );
     return res.json( { message: "Retrieved all boards of the project.", boards } );
@@ -35,7 +35,7 @@ async function deleteBoard( req, res ) {
         return res.status( 400 ).json( { message: "Specify id to delete!" } );
     }
 
-    const result = await BoardService.deleteBoard( req.body.id );
+    const result = await BoardService.deleteBoard( req.params.id );
     if ( result ) {
         return res.status( 204 ).json( { message: "Board was successfully deleted." } );
     }
