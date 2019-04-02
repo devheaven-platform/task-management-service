@@ -68,13 +68,13 @@ async function updateTask( req, res ) {
         return res.status( 400 ).json( { message: "Specify id to update!" } );
     }
 
-    if ( !req.body.name && !req.body.columnId && !req.body.description && !req.body.assignees && !req.body.hours ) {
+    if ( !req.body.name && !req.body.columnId && !req.body.description && !req.body.assignees && !req.body.hours && !req.body.columnId ) {
         return res.status( 400 ).json( { message: "Specify the new changes to add!" } );
     }
 
     const task = await TaskService
         .updateTask( req.body.id, {
-            name: req.body.name, status: req.body.status, assignees: req.body.assignees, hours: req.body.hours,
+            name: req.body.name, columnId: req.body.columnId, status: req.body.status, assignees: req.body.assignees, hours: req.body.hours,
         } );
     if ( task ) {
         return res.status( 200 ).json( { message: "Task updated.", task } );

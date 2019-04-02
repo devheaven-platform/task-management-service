@@ -88,6 +88,13 @@ describe( "TaskService", () => {
             should.exist( result );
             expect( result.hours ).to.equal( newValues.hours );
         } );
+        it( "Should update a task column only", async () => {
+            expect( task ).to.not.equal( null );
+            const newValues = { columnId: "5c9a6b81c5325f3df029066d" };
+            const result = await service.updateTask( task.id, newValues );
+            should.exist( result );
+            expect( result.columnId.toString() ).to.equal( newValues.columnId );
+        } );
         it( "Should update a task name only", async () => {
             expect( task ).to.not.equal( null );
             const newValues = { name: "New" };
