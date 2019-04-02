@@ -64,4 +64,35 @@ describe( "TaskService", () => {
             expect( result ).to.equal( false );
         } );
     } );
+    describe( "/update", () => {
+        let task;
+        beforeEach( async () => {
+            const taskName = "Test task";
+            const columnId = "5c9a6b81c5325f3df029066d";
+            task = await service.createTask( columnId, taskName );
+        } );
+
+        it( "Should update a task", async () => {
+            expect( task ).to.not.equal( null );
+            const newValues = { name: "New name", description: "desc" };
+            const result = await service.updateTask( task.id, newValues );
+            should.exist( result );
+            expect( result.name ).to.equal( newValues.name );
+            expect( result.description ).to.equal( newValues.description );
+        } );
+        it( "Should update a task name only", async () => {
+            expect( task ).to.not.equal( null );
+            const newValues = { name: "New" };
+            const result = await service.updateTask( task.id, newValues );
+            should.exist( result );
+            expect( result.name ).to.equal( newValues.name );
+        } );
+        it( "Should update a task description only", async () => {
+            expect( task ).to.not.equal( null );
+            const newValues = { description: "New" };
+            const result = await service.updateTask( task.id, newValues );
+            should.exist( result );
+            expect( result.description ).to.equal( newValues.description );
+        } );
+    } );
 } );

@@ -16,6 +16,9 @@ const taskSchema = new mongoose.Schema( {
     description: {
         type: String,
     },
+    assignees: [ {
+        type: String,
+    } ],
 } );
 
 /* eslint-disable no-underscore-dangle, no-param-reassign */
