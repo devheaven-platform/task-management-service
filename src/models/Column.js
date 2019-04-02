@@ -13,6 +13,7 @@ const columnSchema = new mongoose.Schema( {
         ref: "Board",
         required: true,
     },
+    tasks: [ { type: mongoose.Schema.Types.ObjectId, ref: "Task" } ],
 } );
 
 /* eslint-disable no-underscore-dangle, no-param-reassign */

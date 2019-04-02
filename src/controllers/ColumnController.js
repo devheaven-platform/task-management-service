@@ -51,7 +51,7 @@ async function getColumnsForBoard( req, res ) {
 
     const result = await ColumnService.getcolumnsForBoardId( req.params.boardId );
     if ( result ) {
-        return res.status( 200 ).json( { message: "Columns were successfully retrieved.", result } );
+        return res.status( 200 ).json( { message: "Columns were successfully retrieved.", columns: result } );
     }
     return res.status( 500 ).json( { message: "Something went wrong while trying to get the columns for the board!" } );
 }

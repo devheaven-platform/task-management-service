@@ -52,7 +52,7 @@ async function getTasksForColumn( req, res ) {
 
     const result = await TaskService.getTasksForColumn( req.params.columnId );
     if ( result ) {
-        return res.status( 200 ).json( { message: "Tasks were successfully retrieved.", result } );
+        return res.status( 200 ).json( { message: "Tasks were successfully retrieved.", tasks: result } );
     }
     return res.status( 500 ).json( { message: "Something went wrong while trying to get the columns for the board!" } );
 }

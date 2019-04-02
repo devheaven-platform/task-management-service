@@ -5,6 +5,6 @@ const router = express.Router();
 
 router.post( "/create", taskController.createTask );
 router.delete( "/delete/:id", taskController.deleteTask );
-router.get( "/getTasks/:columnId", taskController.getTasksForColumn );
+router.get( "/:columnId", taskController.getTasksForColumn );
 
 module.exports = router;
