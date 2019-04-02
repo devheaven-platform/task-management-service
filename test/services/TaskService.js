@@ -80,6 +80,14 @@ describe( "TaskService", () => {
             expect( result.name ).to.equal( newValues.name );
             expect( result.description ).to.equal( newValues.description );
         } );
+
+        it( "Should update a task hours only", async () => {
+            expect( task ).to.not.equal( null );
+            const newValues = { hours: 10 };
+            const result = await service.updateTask( task.id, newValues );
+            should.exist( result );
+            expect( result.hours ).to.equal( newValues.hours );
+        } );
         it( "Should update a task name only", async () => {
             expect( task ).to.not.equal( null );
             const newValues = { name: "New" };
