@@ -1,4 +1,5 @@
 const Column = require( "../models/Column" );
+const Board = require( "../models/Board" );
 
 /**
  * Creates a column for the given board.
@@ -13,6 +14,10 @@ async function createColumn( boardId, name ) {
         column.boardId = boardId;
         column.name = name;
         await column.save();
+
+        const board = await Board.findById( boardId ).exec();
+        board.columns.push( column.id );
+        await board.save();
 
         return column;
     } catch ( e ) {

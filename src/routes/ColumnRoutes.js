@@ -3,7 +3,7 @@ const columnController = require( "../controllers/ColumnController" );
 
 const router = express.Router();
 
-router.get( "/getColumns/:boardId", columnController.getColumnsForBoard );
+router.get( "/:boardId", columnController.getColumnsForBoard );
 router.post( "/create", columnController.createColumn );
 router.delete( "/delete/:id", columnController.deleteColumn );
 
