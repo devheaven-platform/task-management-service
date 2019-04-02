@@ -67,7 +67,7 @@ describe( "BoardController", () => {
                 .end( ( createErr, createRes ) => {
                     const deleteReq = { id: createRes.body.board.id };
                     chai.request( app )
-                        .delete( `/board/delete/${ deleteReq.id }` )
+                        .delete( "/board/delete" ).send( deleteReq )
                         .end( ( err, res ) => {
                             res.should.have.status( 204 );
                             done();
@@ -76,8 +76,9 @@ describe( "BoardController", () => {
         } );
 
         it( "should return status 400 if no board could be deleted.", ( done ) => {
+            const req = { id: "" };
             chai.request( app )
-                .delete( "/board/delete/" )
+                .delete( "/board/delete" ).send( req )
                 .end( ( err, res ) => {
                     res.should.have.status( 400 );
                     done();
@@ -140,23 +141,7 @@ describe( "BoardController", () => {
                         } );
                 } );
         } );
-        it( "should return status 200 if the board was archived", ( done ) => {
-            const req = { projectId: "1", name: "boardName" };
-            chai.request( app )
-                .post( "/board/create" ).send( req )
-                .end( ( err, res ) => {
-                    const updateReq = {
-                        id: res.body.board.id, archived: true,
-                    };
-                    chai.request( app )
-                        .put( "/board/update" ).send( updateReq )
-                        .end( ( upErr, upRes ) => {
-                            upRes.should.have.status( 200 );
-                            upRes.body.board.archived.should.be.equal( true );
-                            done();
-                        } );
-                } );
-        } );
+
         it( "should return status 400 if the update request did not have an id", ( done ) => {
             const req = { projectId: "1", name: "boardName" };
             chai.request( app )

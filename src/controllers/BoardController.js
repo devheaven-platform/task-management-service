@@ -47,18 +47,17 @@ async function deleteBoard( req, res ) {
  * @param {HTTPRequest} req, the request
  * @param {HTTPResponse} res, the response
  */
-// eslint-disable-next-line complexity
 async function updateBoard( req, res ) {
     if ( !req.body.id ) {
         return res.status( 400 ).json( { message: "Specify id to update!" } );
     }
 
-    if ( !req.body.name && !req.body.status && !req.body.archived ) {
+    if ( !req.body.name && !req.body.status ) {
         return res.status( 400 ).json( { message: "Specify the new changes to add!" } );
     }
 
     const board = await BoardService
-        .updateBoard( req.body.id, { name: req.body.name, status: req.body.status, archived: req.body.archived } );
+        .updateBoard( req.body.id, { name: req.body.name, status: req.body.status } );
     if ( board ) {
         return res.status( 200 ).json( { message: "Board updated.", board } );
     }
