@@ -16,6 +16,11 @@ async function createBoard( req, res ) {
     return res.json( { message: "Created board!", board } );
 }
 
+/**
+ * Gets a board with populated data.
+ * @param HTTPRequest req, the request
+ * @param HTTPResponse res, the response
+ */
 async function getBoardById( req, res ) {
     if ( !req.params.id ) {
         return res.status( 400 ).json( { message: "Specify the board id" } );
