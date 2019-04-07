@@ -33,7 +33,7 @@ async function deleteTask( req, res ) {
         return res.status( 400 ).json( { message: "Specify id to delete!" } );
     }
 
-    const result = await TaskService.deleteTask( req.body.id );
+    const result = await TaskService.deleteTask( req.params.id );
     if ( result ) {
         return res.status( 204 ).json( { message: "Task was successfully deleted." } );
     }
