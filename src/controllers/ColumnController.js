@@ -29,10 +29,10 @@ async function createColumn( req, res ) {
  * @param {HTTPResponse} res, the response
  */
 async function deleteColumn( req, res ) {
-    if ( !req.body.id ) {
+    if ( !req.params.id ) {
         return res.status( 400 ).json( { message: "Specify id to delete!" } );
     }
-    const result = await ColumnService.deleteColumn( req.body.id );
+    const result = await ColumnService.deleteColumn( req.params.id );
     if ( result ) {
         return res.status( 204 ).json( { message: "Column was successfully deleted." } );
     }

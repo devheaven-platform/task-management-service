@@ -65,9 +65,8 @@ describe( "BoardController", () => {
             chai.request( app )
                 .post( "/board/create" ).send( req )
                 .end( ( createErr, createRes ) => {
-                    const deleteReq = { id: createRes.body.board.id };
                     chai.request( app )
-                        .delete( "/board/delete" ).send( deleteReq )
+                        .delete( `/board/delete/${ createRes.body.board.id }` ).send( )
                         .end( ( err, res ) => {
                             res.should.have.status( 204 );
                             done();
@@ -75,12 +74,11 @@ describe( "BoardController", () => {
                 } );
         } );
 
-        it( "should return status 400 if no board could be deleted.", ( done ) => {
-            const req = { id: "" };
+        it( "should return status 500 if no board could be deleted.", ( done ) => {
             chai.request( app )
-                .delete( "/board/delete" ).send( req )
+                .delete( "/board/delete/-1" ).send( )
                 .end( ( err, res ) => {
-                    res.should.have.status( 400 );
+                    res.should.have.status( 500 );
                     done();
                 } );
         } );

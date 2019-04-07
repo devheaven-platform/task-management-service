@@ -50,7 +50,7 @@ async function deleteBoard( req, res ) {
         return res.status( 400 ).json( { message: "Specify id to delete!" } );
     }
 
-    const result = await BoardService.deleteBoard( req.body.id );
+    const result = await BoardService.deleteBoard( req.params.id );
     if ( result ) {
         return res.status( 204 ).json( { message: "Board was successfully deleted." } );
     }
