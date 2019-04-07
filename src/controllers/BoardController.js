@@ -31,17 +31,10 @@ async function getBoardById( req, res ) {
 }
 
 async function getAll( req, res ) {
-<<<<<<< HEAD
     if ( !req.params.id ) {
         return res.status( 400 ).json( { message: "Specify projectId" } );
     }
     const boards = await BoardService.getAll( req.params.id );
-=======
-    if ( !req.params.projectId ) {
-        return res.status( 400 ).json( { message: "Specify projectId" } );
-    }
-    const boards = await BoardService.getAll( req.params.projectId );
->>>>>>> Change req.body to use req.params in get requests and delete requests
 
     res.status( 200 );
     return res.json( { message: "Retrieved all boards of the project.", boards } );
