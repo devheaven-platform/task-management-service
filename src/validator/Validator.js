@@ -18,6 +18,10 @@ async function validateUpdateBoardRequest( req, res ) {
     if ( req.body.status ) {
         data.status = req.body.status;
     }
+
+    if ( req.body.archived ) {
+        data.archived = req.body.archived;
+    }
     if ( badRequest ) {
         return res.status( 400 ).json( { message: "Make sure the requests contains an id and the new changes!" } );
     }

@@ -17,6 +17,10 @@ const boardSchema = new mongoose.Schema( {
         enum: [ "Open", "Closed" ],
         default: "Open",
     },
+    archived: {
+        type: Boolean,
+        default: false,
+    },
     columns: [ { type: mongoose.Schema.Types.ObjectId, ref: "Column" } ],
 } );
 

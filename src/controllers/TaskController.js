@@ -57,6 +57,31 @@ async function getTasksForColumn( req, res ) {
     return res.status( 500 ).json( { message: "Something went wrong while trying to get the columns for the board!" } );
 }
 
+/**
+ * Updates the board with the given values.
+ * @param {HTTPRequest} req, the request
+ * @param {HTTPResponse} res, the response
+ */
+// eslint-disable-next-line complexity
+async function updateTask( req, res ) {
+    if ( !req.body.id ) {
+        return res.status( 400 ).json( { message: "Specify id to update!" } );
+    }
+
+    if ( !req.body.name && !req.body.columnId && !req.body.description && !req.body.assignees && !req.body.hours && !req.body.columnId ) {
+        return res.status( 400 ).json( { message: "Specify the new changes to add!" } );
+    }
+
+    const task = await TaskService
+        .updateTask( req.body.id, {
+            name: req.body.name, columnId: req.body.columnId, status: req.body.status, assignees: req.body.assignees, hours: req.body.hours,
+        } );
+    if ( task ) {
+        return res.status( 200 ).json( { message: "Task updated.", task } );
+    }
+    return res.status( 500 ).json( { message: "Something went wrong while trying to update the board!" } );
+}
+
 module.exports = {
-    createTask, deleteTask, getTasksForColumn,
+    createTask, deleteTask, getTasksForColumn, updateTask,
 };

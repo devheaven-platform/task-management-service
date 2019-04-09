@@ -61,7 +61,23 @@ async function getTasksForColumn( columnId ) {
         return null;
     }
 }
+/**
+ * Update the task with the given values.
+ * @param {String} id, the id of the task.
+ * @param { } data, the new values of the tasj.
+ */
+async function updateTask( id, data ) {
+    try {
+        if ( !data ) {
+            return null;
+        }
 
+        const task = await Task.findOneAndUpdate( { _id: id }, data, { new: true } ).exec();
+        return task;
+    } catch ( e ) {
+        return null;
+    }
+}
 module.exports = {
-    createTask, deleteTask, getTasksForColumn,
+    createTask, deleteTask, getTasksForColumn, updateTask,
 };
