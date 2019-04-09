@@ -49,7 +49,7 @@ async function getColumnsForBoard( req, res ) {
         return res.status( 400 ).json( { message: "Specify a board id1" } );
     }
 
-    const result = await ColumnService.getcolumnsForBoardId( req.params.boardId );
+    const result = await ColumnService.getColumnsForBoardId( req.params.boardId );
     if ( result ) {
         return res.status( 200 ).json( { message: "Columns were successfully retrieved.", columns: result } );
     }

@@ -45,7 +45,7 @@ async function deleteColumn( id ) {
  * Return a list of all the columns that are in a board.
  * @param {String} boardId, the id of the board.
  */
-async function getcolumnsForBoardId( boardId ) {
+async function getColumnsForBoardId( boardId ) {
     try {
         const columns = await Column.find( { boardId } ).exec();
         return columns;
@@ -55,5 +55,5 @@ async function getcolumnsForBoardId( boardId ) {
 }
 
 module.exports = {
-    createColumn, deleteColumn, getcolumnsForBoardId,
+    createColumn, deleteColumn, getColumnsForBoardId,
 };
