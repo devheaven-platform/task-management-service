@@ -1,4 +1,5 @@
 const BoardService = require( "../services/BoardService" );
+const Validator = require( "../validator/Validator" );
 
 /**
  * Creates a board.
@@ -13,6 +14,20 @@ async function createBoard( req, res ) {
 
     res.status( 201 );
     return res.json( { message: "Created board!", board } );
+}
+
+/**
+ * Gets a board with populated data.
+ * @param HTTPRequest req, the request
+ * @param HTTPResponse res, the response
+ */
+async function getBoardById( req, res ) {
+    if ( !req.params.id ) {
+        return res.status( 400 ).json( { message: "Specify the board id" } );
+    }
+    const board = await BoardService.getBoardById( req.params.id );
+    res.status( 200 );
+    return res.json( { message: "Retrieved the board", board } );
 }
 
 async function getAll( req, res ) {
@@ -48,16 +63,10 @@ async function deleteBoard( req, res ) {
  * @param {HTTPResponse} res, the response
  */
 async function updateBoard( req, res ) {
-    if ( !req.body.id ) {
-        return res.status( 400 ).json( { message: "Specify id to update!" } );
-    }
-
-    if ( !req.body.name && !req.body.status && !req.body.archived ) {
-        return res.status( 400 ).json( { message: "Specify the new changes to add!" } );
-    }
+    const result = await Validator.validateUpdateBoardRequest( req, res );
 
     const board = await BoardService
-        .updateBoard( req.body.id, { name: req.body.name, status: req.body.status, archived: req.body.archived } );
+        .updateBoard( req.body.id, result );
     if ( board ) {
         return res.status( 200 ).json( { message: "Board updated.", board } );
     }
@@ -65,5 +74,5 @@ async function updateBoard( req, res ) {
 }
 
 module.exports = {
-    createBoard, getAll, updateBoard, deleteBoard,
+    createBoard, getAll, updateBoard, deleteBoard, getBoardById,
 };

@@ -24,6 +24,18 @@ async function createBoard( projectId, name ) {
 }
 
 /**
+ * Gets a board with the arrays populated.
+ * @param {*} id, the id of the board
+ */
+async function getBoardById( id ) {
+    const board = await Board.findById( id ).populate( {
+        path: "columns",
+        populate: { path: "tasks" },
+    } ).exec();
+    return board;
+}
+
+/**
  * Gets all boards of a project.
  * @param {String} projectId, the id of the project.
  */
@@ -71,5 +83,5 @@ async function updateBoard( id, data ) {
 }
 
 module.exports = {
-    createBoard, getAll, deleteBoard, updateBoard,
+    createBoard, getAll, deleteBoard, updateBoard, getBoardById,
 };

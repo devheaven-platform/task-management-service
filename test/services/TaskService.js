@@ -6,16 +6,29 @@ const testMongoDB = process.env.MONGO_DB;
 const chai = require( "chai" );
 
 const should = chai.should();
+const boardService = require( "../../src/services/BoardService" );
+const columnService = require( "../../src/services/ColumnService" );
 const service = require( "../../src/services/TaskService" );
 
 describe( "TaskService", () => {
+    const testData = {};
     beforeEach( () => mongoUnit.initDb( testMongoUrl + testMongoDB, {} ) );
     afterEach( () => mongoUnit.drop() );
+    beforeEach( async () => {
+        const boardName = "Board 1";
+        const projectId = 1;
+        const board = await boardService.createBoard( projectId, boardName );
+        testData.boardId = board.id;
+        const columnName = "Test column";
+        const { boardId } = testData;
+        const column = await columnService.createColumn( boardId, columnName );
+        testData.columnId = column.id;
+    } );
 
     describe( "/create", () => {
         it( "should create a task", async () => {
             const taskName = "Test task";
-            const columnId = "5c9a6b81c5325f3df029066d";
+            const { columnId } = testData;
             const task = await service.createTask( columnId, taskName );
             expect( task.name ).to.equal( taskName );
             should.exist( task.id );
@@ -30,13 +43,13 @@ describe( "TaskService", () => {
 
         it( "should not create a task without a valid name", async () => {
             const taskName = "";
-            const columnId = "5c9a6b81c5325f3df029066d";
+            const { columnId } = testData;
             const task = await service.createTask( columnId, taskName );
             should.not.exist( task );
         } );
 
         it( "should get all tasks of a column", async () => {
-            const columnId = "5c9a6b81c5325f3df029066d";
+            const { columnId } = testData;
             await service.createTask( columnId, "Column 1" );
             await service.createTask( columnId, "Column 2" );
 
@@ -52,7 +65,7 @@ describe( "TaskService", () => {
 
     describe( "/delete", () => {
         it( "should delete a task", async () => {
-            const columnId = "5c9a6b81c5325f3df029066d";
+            const { columnId } = testData;
             const board = await service.createTask( columnId, "Test task" );
             expect( board ).to.not.equal( null );
             const result = await service.deleteTask( board.id );

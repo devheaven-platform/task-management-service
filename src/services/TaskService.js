@@ -1,4 +1,5 @@
 const Task = require( "../models/Task" );
+const Column = require( "../models/Column" );
 
 /**
  * Adds a task to the given column with the specified name and description.
@@ -21,6 +22,10 @@ async function createTask( columnId, name, description ) {
         task.name = name;
         task.description = taskDescription;
         await task.save();
+
+        const column = await Column.findById( columnId ).exec();
+        column.tasks.push( task.id );
+        await column.save();
 
         return task;
     } catch ( e ) {

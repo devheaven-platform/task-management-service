@@ -10,12 +10,21 @@ chai.use( chaiHttp );
 const should = chai.should();
 
 describe( "ColumnController", () => {
+    const testData = {};
     beforeEach( () => mongoUnit.initDb( testMongoUrl + testMongoDB, {} ) );
     afterEach( () => mongoUnit.drop() );
+    before( () => {
+        const req = { projectId: "1", name: "boardName" };
+        chai.request( app )
+            .post( "/board/create" ).send( req )
+            .end( ( err, res ) => {
+                testData.boardId = res.body.board.id;
+            } );
+    } );
 
     describe( "/create", () => {
         it( "should create a column", ( done ) => {
-            const req = { boardId: "5c921b99bf81ef15fc6eb29a", name: "columnName" };
+            const req = { boardId: testData.boardId, name: "columnName" };
             chai.request( app )
                 .post( "/column/create" ).send( req )
                 .end( ( err, res ) => {
@@ -38,7 +47,7 @@ describe( "ColumnController", () => {
         } );
 
         it( "should return 400 if no name was specified", ( done ) => {
-            const req = { boardId: "5c921b99bf81ef15fc6eb29a" };
+            const req = { boardId: testData.boardId };
             chai.request( app )
                 .post( "/column/create" ).send( req )
                 .end( ( err, res ) => {
@@ -50,30 +59,28 @@ describe( "ColumnController", () => {
 
     describe( "/delete", () => {
         it( "should return status 204 if a column was deleted", ( done ) => {
-            const req = { boardId: "5c921b99bf81ef15fc6eb29a", name: "columnName" };
             chai.request( app )
-                .post( "/column/create" ).send( req )
+                .post( "/board/create" ).send( { projectId: "1", name: "boardName" } )
                 .end( ( err, res ) => {
                     chai.request( app )
-                        .delete( `/column/delete${ res.body.column.id }` ).send()
-                        .end( ( deleteErr, deleteRes ) => {
-                            deleteRes.should.have.status( 204 );
-                            done();
+                        .post( "/column/create" ).send( { boardId: res.body.board.id, name: "testBoard" } )
+                        .end( ( createErr, createRes ) => {
+                            chai.request( app )
+                                .delete( `/column/delete/${ createRes.body.column.id }` ).send()
+                                .end( ( deleteErr, deleteRes ) => {
+                                    deleteRes.should.have.status( 204 );
+                                    done();
+                                } );
                         } );
                 } );
         } );
 
-        it( "should return status 400 if the id was not specified", ( done ) => {
-            const req = { boardId: "5c921b99bf81ef15fc6eb29a", name: "columnName" };
+        it( "should return status 500 if the id was not specified", ( done ) => {
             chai.request( app )
-                .post( "/column/create" ).send( req )
-                .end( () => {
-                    chai.request( app )
-                        .delete( "/column/delete/" ).send()
-                        .end( ( deleteErr, deleteRes ) => {
-                            deleteRes.should.have.status( 400 );
-                            done();
-                        } );
+                .delete( "/column/delete/-1" ).send()
+                .end( ( deleteErr, deleteRes ) => {
+                    deleteRes.should.have.status( 500 );
+                    done();
                 } );
         } );
     } );
