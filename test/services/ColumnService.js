@@ -50,7 +50,7 @@ describe( "ColumnService", () => {
             await service.createColumn( boardId, "Column 1" );
             await service.createColumn( boardId, "Column 2" );
 
-            const columns = await service.getcolumnsForBoardId( boardId );
+            const columns = await service.getColumnsForBoardId( boardId );
             should.exist( columns );
             expect( columns.length ).to.equal( 2 );
             columns.forEach( ( column ) => {
