@@ -1,14 +1,57 @@
+/* eslint-disable no-underscore-dangle, no-param-reassign */
 const mongoose = require( "mongoose" );
+const uuid = require( "uuid" );
 
 /**
- * The mongoose schema for Board.
+ * @swagger
+ * components:
+ *   schemas:
+ *     Board:
+ *       type: object
+ *       properties:
+ *         id:
+ *           type: string
+ *           description: The id of the board
+ *           example: 55417624-c159-4eab-9260-d4679a2e9b31
+ *         name:
+ *           type: string
+ *           description: The name of the board
+ *           example: Sprint 1
+ *         status:
+ *           type: string
+ *           enum: [Open, Closed]
+ *           description: The status of the board
+ *           example: Open
+ *         archived:
+ *           type: boolean
+ *           description: Whether the board is archived
+ *           example: false
+ *         columns:
+ *           type: array
+ *           description: A list containing the board columns id's
+ *           items:
+ *             type: string
+ *         createdAt:
+ *            type: string
+ *            description: The date a board was created on
+ *            example: 2019-01-01T00:00:00.000Z
+ *         updatedAt:
+ *            type: string
+ *            description: The date a board was last updated on
+ *            example: 2019-01-01T00:00:00.000Z
+ *       required:
+ *         - name
+ *         - status
+ *         - archived
+ *         - createdAt
+ *         - updatedAt
  */
-const boardSchema = new mongoose.Schema( {
-    name: {
+const Board = new mongoose.Schema( {
+    _id: {
         type: String,
-        required: true,
+        default: uuid.v4,
     },
-    projectId: {
+    name: {
         type: String,
         required: true,
     },
@@ -21,19 +64,17 @@ const boardSchema = new mongoose.Schema( {
         type: Boolean,
         default: false,
     },
-    columns: [ { type: mongoose.Schema.Types.ObjectId, ref: "Column" } ],
-} );
+    columns: [ {
+        type: String,
+        ref: "Column",
+    } ],
+}, { timestamps: true } );
 
-/* eslint-disable no-underscore-dangle, no-param-reassign */
-boardSchema.set( "toJSON", {
+Board.set( "toJSON", {
     virtuals: true,
     versionKey: false,
     transform: ( doc, ret ) => { delete ret._id; },
 } );
-/* eslint-enable no-underscore-dangle, no-param-reassign */
 
-/**
- * The model "Board" derived from the boardSchema.
- */
-const model = mongoose.model( "Board", boardSchema );
-module.exports = model;
+module.exports = mongoose.model( "Board", Board );
+/* eslint-enable no-underscore-dangle, no-param-reassign */

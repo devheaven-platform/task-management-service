@@ -1,11 +1,14 @@
-require( "dotenv" ).config();
-const express = require( "express" );
-const bodyparser = require( "body-parser" );
-const cors = require( "cors" );
-const mongoose = require( "mongoose" );
-const Prometheus = require( "prom-client" );
 const expressPrometheus = require( "express-prom-bundle" );
+const swaggerUi = require( "swagger-ui-express" );
+const bodyparser = require( "body-parser" );
+const Prometheus = require( "prom-client" );
+const mongoose = require( "mongoose" );
+const express = require( "express" );
+const cors = require( "cors" );
+require( "dotenv" ).config();
+
 const logger = require( "./config/logger" );
+const specs = require( "./config/swagger" );
 
 const app = express();
 app.disable( "x-powered-by" );
@@ -20,41 +23,50 @@ const mongoURI = process.env.MONGO_URI;
 app.use( bodyparser.json() );
 app.use( cors() );
 
-// Routes
-const boardRoutes = require( "./routes/BoardRoutes" );
-const columnRoutes = require( "./routes/ColumnRoutes" );
-const taskRoutes = require( "./routes/TaskRoutes" );
-
-app.use( "/board", boardRoutes );
-app.use( "/column", columnRoutes );
-app.use( "/task", taskRoutes );
-
 // Connect database
-mongoose.connect( mongoURI + mongoDB, { useNewUrlParser: true, useCreateIndex: true, useFindAndModify: false } ).then( () => logger.info( "MongoDB connected" ) ).catch( error => logger.error( error.stack ) );
+mongoose
+    .connect( mongoURI + mongoDB, {
+        useNewUrlParser: true,
+        useCreateIndex: true,
+        useFindAndModify: false,
+    } )
+    .then( () => logger.info( "MongoDB connected" ) )
+    .catch( error => logger.error( error.stack ) );
 
 // Register prometheus
 Prometheus.collectDefaultMetrics();
 app.use( expressPrometheus() );
 
-// Add prometheus
+// Metrics
 app.get( "/metrics", ( req, res ) => {
     res.set( "Content-Type", Prometheus.register.contentType );
     res.end( Prometheus.register.metrics() );
 } );
+
+// Health
+app.get( "/health", ( req, res ) => res.json( {
+    message: "Service is running",
+} ) );
+
+// Docs
+app.use( "/docs", swaggerUi.serve, swaggerUi.setup( specs ) );
+
+// Routes
+app.use( "/boards", require( "./routes/BoardRoutes" ) );
+app.use( "/columns", require( "./routes/ColumnRoutes" ) );
+app.use( "/tasks", require( "./routes/TaskRoutes" ) );
+
 // Not found
 app.all( "*", ( req, res ) => res.status( 404 ).json( {
-    name: "NotFound",
     message: "Resource Not Found",
-    status: 404,
 } ) );
 
 // Global error handler
-app.use( ( error, req, res ) => {
-    logger.error( "An unhandled exception occurred", error );
+// eslint-disable-next-line
+app.use( ( error, req, res, next ) => {
+    logger.error( error.stack );
     return res.status( 500 ).json( {
-        name: "InternalServerError",
-        message: "An error ocurred",
-        status: 500,
+        message: "An unexpected error occurred",
     } );
 } );
 
@@ -62,4 +74,3 @@ app.use( ( error, req, res ) => {
 app.listen( port, () => {
     logger.info( `Service: listening on http://${ host }:${ port }` );
 } );
-module.exports = app;

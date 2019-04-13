@@ -1,87 +1,82 @@
+const Column = require( "../models/Column" );
 const Board = require( "../models/Board" );
+const Task = require( "../models/Task" );
 
 /**
+ * Gets all boards from the database
  *
- * @param {String} name, the name of the board.
+ * @returns a list of boards
  */
-async function createBoard( projectId, name ) {
-    let boardName = "Default";
-    if ( name ) {
-        boardName = name;
-    }
-    if ( !projectId ) return null;
-
-    try {
-        const board = new Board();
-        board.projectId = projectId;
-        board.name = boardName;
-        await board.save();
-
-        return board;
-    } catch ( e ) {
-        return null;
-    }
-}
+const getBoards = async () => Board.find().exec();
 
 /**
- * Gets a board with the arrays populated.
- * @param {*} id, the id of the board
+ * Gets one board from the database
+ *
+ * @returns the board or null
  */
-async function getBoardById( id ) {
-    const board = await Board.findById( id ).populate( {
-        path: "columns",
-        populate: { path: "tasks" },
-    } ).exec();
+const getBoardById = async id => Board.findById( id ).populate( {
+    path: "columns",
+    populate: {
+        path: "tasks",
+    },
+} ).exec();
+
+/**
+ * Creates a new board and calls the project
+ * management service to add the board to the
+ * project
+ *
+ * @param {Object} newBoard the board to add
+ * @returns the new board or null if an error occurred
+ */
+const createBoard = async ( newBoard ) => {
+    const board = new Board( newBoard ).save();
+
+    // TODO: send event to project-management-service to add board to project
+
     return board;
-}
+};
 
 /**
- * Gets all boards of a project.
- * @param {String} projectId, the id of the project.
+ * Updates a existing board
+ *
+ * @param {String} id the id of the board to update
+ * @param {Object} board the updated board values
+ * @returns the updated board or null if an error occurred
  */
-async function getAll( projectId ) {
-    try {
-        const boards = await Board.find( { projectId } ).exec();
-        return boards;
-    } catch ( e ) {
+const updateBoard = async ( id, board ) => Board.findOneAndUpdate( { _id: id }, board, { new: true } ).exec();
+
+/**
+ * Deletes a board from the database and calls the
+ * project management service to remove the board
+ * from the project.
+ *
+ * @param {String} id the id of the board to delete
+ * @returns the deleted board or null if an error occurred
+ */
+const deleteBoard = async ( id ) => {
+    const board = await Board.findByIdAndRemove( id ).exec();
+    if ( !board ) {
         return null;
     }
-}
 
-/**
- * Deletes a board from the database.
- * @param {String} id, the id of the board.
- */
-async function deleteBoard( id ) {
-    try {
-        if ( id ) {
-            await Board.deleteOne( { _id: id } ).exec();
-            return true;
-        }
-        return false;
-    } catch ( e ) {
-        return false;
-    }
-}
+    // TODO: send event to project-management-service to delete board from project
 
-/**
- * Update the board with the given values.
- * @param {String} id, the id of the board.
- * @param { } data, the new values of the board.
- */
-async function updateBoard( id, data ) {
-    try {
-        if ( !data ) {
-            return null;
-        }
+    // Delete tasks
+    const columns = await Promise.all( board.columns.map( async columnId => Column.findById( columnId ).exec() ) );
+    const tasks = columns.map( column => column.tasks );
+    await Task.deleteMany( { _id: { $in: tasks } } ).exec();
 
-        const board = await Board.findOneAndUpdate( { _id: id }, data, { new: true } ).exec();
-        return board;
-    } catch ( e ) {
-        return null;
-    }
-}
+    // Delete columns
+    await Column.deleteMany( { _id: { $in: board.columns } } ).exec();
+
+    return board;
+};
 
 module.exports = {
-    createBoard, getAll, deleteBoard, updateBoard, getBoardById,
+    getBoards,
+    getBoardById,
+    createBoard,
+    updateBoard,
+    deleteBoard,
 };

@@ -1,106 +1,213 @@
-const { expect } = require( "chai" );
-const mongoUnit = require( "mongo-unit" );
+const { expect, should } = require( "chai" );
 
-const testMongoUrl = process.env.MONGO_URI;
-const testMongoDB = process.env.MONGO_DB;
-const chai = require( "chai" );
-
-const should = chai.should();
-const service = require( "../../src/services/BoardService" );
+const ColumnService = require( "../../src/services/ColumnService" );
+const BoardService = require( "../../src/services/BoardService" );
+const TaskService = require( "../../src/services/TaskService" );
 
 describe( "BoardService", () => {
-    beforeEach( () => mongoUnit.initDb( testMongoUrl + testMongoDB, {} ) );
-    afterEach( () => mongoUnit.drop() );
+    describe( "getBoards", () => {
+        before( async () => {
+            const newBoard1 = {
+                name: "Board 1",
+                project: "8d50a412-3f38-458e-be0e-06f0e084afb7",
+            };
+            const newBoard2 = {
+                name: "Board 2",
+                project: "8d50a412-3f38-458e-be0e-06f0e084afb7",
+            };
 
-    describe( "/create", () => {
+            await BoardService.createBoard( newBoard1 );
+            await BoardService.createBoard( newBoard2 );
+        } );
+
+        it( "should return all boards", async () => {
+            const boards = await BoardService.getBoards();
+
+            expect( boards.length ).to.equal( 2 );
+            expect( boards[ 0 ].name ).to.equal( "Board 1" );
+            expect( boards[ 1 ].name ).to.equal( "Board 2" );
+        } );
+    } );
+
+    describe( "getBoardById", () => {
+        it( "should return one board", async () => {
+            const newBoard = {
+                name: "Board 1",
+                project: "8d50a412-3f38-458e-be0e-06f0e084afb7",
+            };
+            const { id } = await BoardService.createBoard( newBoard );
+
+            const board = await BoardService.getBoardById( id );
+
+            expect( board.name ).to.equal( newBoard.name );
+            expect( board.status ).to.equal( "Open" );
+            expect( board.archived ).to.equal( false );
+        } );
+
+        it( "should return null if not found", async () => {
+            const board = await BoardService.getBoardById( "8d50a412-3f38-458e-be0e-06f0e084afb7" );
+
+            should().not.exist( board );
+        } );
+    } );
+
+    describe( "createBoard", () => {
         it( "should create a board", async () => {
-            const boardName = "Board 1";
-            const projectId = 1;
-            const board = await service.createBoard( projectId, boardName );
-            expect( board.name ).to.equal( boardName );
-            should.exist( board.id );
+            const newBoard = {
+                name: "Board 1",
+                project: "8d50a412-3f38-458e-be0e-06f0e084afb7",
+            };
+
+            const board = await BoardService.createBoard( newBoard );
+
+            expect( board.name ).to.equal( newBoard.name );
+            expect( board.status ).to.equal( "Open" );
+            expect( board.archived ).to.equal( false );
+            should().exist( board.id );
         } );
+    } );
 
-        it( "should create a default board", async () => {
-            const projectId = 1;
-            const board = await service.createBoard( projectId );
-            should.exist( board.name );
-            should.exist( board.id );
-        } );
+    describe( "updateBoard", async () => {
+        it( "should update a board", async () => {
+            const newBoard = {
+                name: "Board 1",
+                project: "8d50a412-3f38-458e-be0e-06f0e084afb7",
+            };
+            const { id } = await BoardService.createBoard( newBoard );
 
-        it( "should get all of a project", async () => {
-            const projectId = 1;
-            await service.createBoard( projectId, "Board 1" );
-            await service.createBoard( projectId, "Board 2" );
-
-            const boards = await service.getAll( projectId );
-            boards.forEach( ( board ) => {
-                should.exist( board.id );
-                expect( board.projectId ).to.equal( "1" );
+            const board = await BoardService.updateBoard( id, {
+                name: "Board 2",
+                status: "Closed",
+                archived: true,
             } );
+
+            expect( board.name ).to.equal( "Board 2" );
+            expect( board.status ).to.equal( "Closed" );
+            expect( board.archived ).to.equal( true );
+        } );
+
+        it( "should update a board name only", async () => {
+            const newBoard = {
+                name: "Board 1",
+                project: "8d50a412-3f38-458e-be0e-06f0e084afb7",
+            };
+            const { id } = await BoardService.createBoard( newBoard );
+
+            const board = await BoardService.updateBoard( id, {
+                name: "Board 2",
+            } );
+
+            expect( board.name ).to.equal( "Board 2" );
+            expect( board.status ).to.equal( "Open" );
+            expect( board.archived ).to.equal( false );
+        } );
+
+        it( "should update a board status only", async () => {
+            const newBoard = {
+                name: "Board 1",
+                project: "8d50a412-3f38-458e-be0e-06f0e084afb7",
+            };
+            const { id } = await BoardService.createBoard( newBoard );
+
+            const board = await BoardService.updateBoard( id, {
+                status: "Closed",
+            } );
+
+            expect( board.name ).to.equal( "Board 1" );
+            expect( board.status ).to.equal( "Closed" );
+            expect( board.archived ).to.equal( false );
+        } );
+
+        it( "should update a board archived only", async () => {
+            const newBoard = {
+                name: "Board 1",
+                project: "8d50a412-3f38-458e-be0e-06f0e084afb7",
+            };
+            const { id } = await BoardService.createBoard( newBoard );
+
+            const board = await BoardService.updateBoard( id, {
+                archived: true,
+            } );
+
+            expect( board.name ).to.equal( "Board 1" );
+            expect( board.status ).to.equal( "Open" );
+            expect( board.archived ).to.equal( true );
+        } );
+
+        it( "should not update a board without a board id", async () => {
+            const board = await BoardService.updateBoard( "invalid", {
+                name: "Board 2",
+                status: "Closed",
+                archived: true,
+            } );
+
+            should().not.exist( board );
         } );
     } );
 
-    describe( "/delete", () => {
+    describe( "deleteBoard", () => {
         it( "should delete a board", async () => {
-            const projectId = 1;
-            const board = await service.createBoard( projectId, "Board 1" );
-            expect( board ).to.not.equal( null );
-            const result = await service.deleteBoard( board.id );
-            expect( result ).to.equal( true );
+            const newBoard = {
+                name: "Board 1",
+                project: "8d50a412-3f38-458e-be0e-06f0e084afb7",
+            };
+            const { id } = await BoardService.createBoard( newBoard );
+
+            const board = await BoardService.deleteBoard( id );
+
+            expect( board.name ).to.equal( newBoard.name );
+            expect( board.status ).to.equal( "Open" );
+            expect( board.archived ).to.equal( false );
         } );
 
-        it( "should return false", async () => {
-            const result = await service.deleteBoard( "badId" );
-            expect( result ).to.equal( false );
-        } );
-    } );
+        it( "should delete board columns", async () => {
+            const newBoard = {
+                name: "Board 1",
+                project: "8d50a412-3f38-458e-be0e-06f0e084afb7",
+            };
+            const { id } = await BoardService.createBoard( newBoard );
+            await ColumnService.createColumn( {
+                name: "Column 1",
+                board: id,
+            } );
 
-    describe( "/update", () => {
-        let board;
-        beforeEach( async () => {
-            const projectId = 1;
-            board = await service.createBoard( projectId, "Board 1" );
-        } );
+            const board = await BoardService.deleteBoard( id );
+            const columns = await ColumnService.getColumns();
 
-        it( "Should update a board", async () => {
-            expect( board ).to.not.equal( null );
-            const newValues = { name: "New name", status: "Open" };
-            const result = await service.updateBoard( board.id, newValues );
-            should.exist( result );
-            expect( result.name ).to.equal( newValues.name );
-            expect( result.status ).to.equal( newValues.status );
+            expect( board.name ).to.equal( newBoard.name );
+            expect( board.status ).to.equal( "Open" );
+            expect( board.archived ).to.equal( false );
+            expect( columns.length ).to.equal( 0 );
         } );
 
-        it( "Should update a board name only", async () => {
-            expect( board ).to.not.equal( null );
-            const newValues = { name: "New name" };
-            const result = await service.updateBoard( board.id, newValues );
-            should.exist( result );
-            expect( result.name ).to.equal( newValues.name );
-            expect( result.status ).to.equal( board.status );
+        it( "should delete board tasks", async () => {
+            const newBoard = {
+                name: "Board 1",
+                project: "8d50a412-3f38-458e-be0e-06f0e084afb7",
+            };
+            const { id } = await BoardService.createBoard( newBoard );
+            const column = await ColumnService.createColumn( {
+                name: "Column 1",
+                board: id,
+            } );
+            await TaskService.createTask( {
+                name: "Task 1",
+                column: column.id,
+            } );
+
+            const board = await BoardService.deleteBoard( id );
+            const tasks = await TaskService.getTasks();
+
+            expect( board.name ).to.equal( newBoard.name );
+            expect( board.status ).to.equal( "Open" );
+            expect( board.archived ).to.equal( false );
+            expect( tasks.length ).to.equal( 0 );
         } );
 
-        it( "Should update a board status only", async () => {
-            expect( board ).to.not.equal( null );
-            const newValues = { status: "Closed" };
-            const result = await service.updateBoard( board.id, newValues );
-            should.exist( result );
-            expect( result.name ).to.equal( board.name );
-            expect( result.status ).to.equal( newValues.status );
-        } );
+        it( "should not delete board with invalid id", async () => {
+            const board = await BoardService.deleteBoard( "invalid" );
 
-        it( "Should not update a board without a board id", async () => {
-            expect( board ).to.not.equal( null );
-            const newValues = { name: "New name", status: "Open" };
-            const result = await service.updateBoard( "badid", newValues );
-            should.not.exist( result );
-        } );
-
-        it( "Should not update a board without a value to update", async () => {
-            expect( board ).to.not.equal( null );
-            const result = await service.updateBoard( board.id );
-            should.not.exist( result );
+            should().not.exist( board );
         } );
     } );
 } );

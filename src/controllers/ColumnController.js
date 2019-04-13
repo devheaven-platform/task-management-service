@@ -1,61 +1,105 @@
 const ColumnService = require( "../services/ColumnService" );
+const validate = require( "../validators/ColumnValidator" );
+const ApiError = require( "../models/Error" );
 
 /**
- * Creates a column.
- * @param {HTTPRequest} req, the request
- * @param {HTTPResponse} res, the response
+ * Gets all the columns from the database
+ *
+ * @param {HttpRequest} req the request object
+ * @param {HttpResponse} res the response object
  */
-async function createColumn( req, res ) {
-    if ( !req.body.boardId ) {
-        return res.status( 400 ).json( { message: "Specify boardId" } );
+const getColumns = async ( req, res ) => {
+    const columns = await ColumnService.getColumns();
+    return res.json( columns );
+};
+
+/**
+ * Gets one column by its id
+ *
+ * @param {HttpRequest} req the request object
+ * @param {HttpResponse} res the response object
+ */
+const getColumnById = async ( req, res ) => {
+    if ( !validate.id( req.params.id ) ) {
+        return res.status( 400 ).json( new ApiError( "Id is invalid" ) );
     }
 
-    if ( !req.body.name ) {
-        return res.status( 400 ).json( { message: "Specify name" } );
+    const column = await ColumnService.getColumnById( req.params.id );
+
+    if ( !column ) {
+        return res.status( 404 ).json( new ApiError( "Column not found" ) );
     }
 
-    const column = await ColumnService.createColumn( req.body.boardId, req.body.name );
+    return res.json( column );
+};
 
-    if ( column ) {
-        res.status( 201 );
-        return res.json( { message: "Created the column!", column } );
+/**
+ * Creates a new column
+ *
+ * @param {HttpRequest} req the request object
+ * @param {HttpResponse} res the response object
+ */
+const createColumn = async ( req, res ) => {
+    const errors = validate.create( req.body );
+
+    if ( Object.keys( errors ).length > 0 ) {
+        return res.status( 400 ).json( new ApiError( "One or more values are invalid", errors ) );
     }
-    return res.status( 500 ).json( { message: "Something went wrong trying to create the column." } );
-}
+
+    const column = await ColumnService.createColumn( req.body );
+
+    return res.status( 201 ).json( column );
+};
+
+/**
+ * Updates a existing column
+ *
+ * @param {HttpRequest} req the request object
+ * @param {HttpResponse} res the response object
+ */
+const updateColumn = async ( req, res ) => {
+    if ( !validate.id( req.params.id ) ) {
+        return res.status( 400 ).json( new ApiError( "Id is invalid" ) );
+    }
+
+    if ( Object.keys( req.body ).length === 0 ) {
+        return res.status( 400 ).json( new ApiError( "One or more values are required" ) );
+    }
+
+    const errors = validate.update( req.body );
+    if ( Object.keys( errors ).length > 0 ) {
+        return res.status( 400 ).json( new ApiError( "One or more values are invalid", errors ) );
+    }
+
+    const column = await ColumnService.updateColumn( req.params.id, req.body );
+
+    return res.status( 200 ).json( column );
+};
 
 /**
  * Deletes a column
- * @param {HTTPRequest} req, the request
- * @param {HTTPResponse} res, the response
+ *
+ * @param {HttpRequest} req the request object
+ * @param {HttpResponse} res the response object
  */
-async function deleteColumn( req, res ) {
-    if ( !req.params.id ) {
-        return res.status( 400 ).json( { message: "Specify id to delete!" } );
-    }
-    const result = await ColumnService.deleteColumn( req.params.id );
-    if ( result ) {
-        return res.status( 204 ).json( { message: "Column was successfully deleted." } );
-    }
-    return res.status( 500 ).json( { message: "Something went wrong while trying to delete the column!" } );
-}
-
-/**
- * Retrieves all the columns for the given board id.
- * @param {HTTPRequest} req, the request
- * @param {HTTPResponse} res, the response
- */
-async function getColumnsForBoard( req, res ) {
-    if ( !req.params.boardId ) {
-        return res.status( 400 ).json( { message: "Specify a board id1" } );
+const deleteColumn = async ( req, res ) => {
+    if ( !validate.id( req.params.id ) ) {
+        return res.status( 400 ).json( new ApiError( "Id is invalid" ) );
     }
 
-    const result = await ColumnService.getColumnsForBoardId( req.params.boardId );
-    if ( result ) {
-        return res.status( 200 ).json( { message: "Columns were successfully retrieved.", columns: result } );
+    const column = await ColumnService.deleteColumn( req.params.id );
+
+    if ( !column ) {
+        return res.status( 404 ).json( new ApiError( "Column not found" ) );
     }
-    return res.status( 500 ).json( { message: "Something went wrong while trying to get the columns for the board!" } );
-}
+
+    return res.status( 204 ).send();
+};
 
 module.exports = {
-    createColumn, deleteColumn, getColumnsForBoard,
+    getColumns,
+    getColumnById,
+    createColumn,
+    updateColumn,
+    deleteColumn,
 };
