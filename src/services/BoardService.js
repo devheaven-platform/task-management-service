@@ -64,7 +64,7 @@ const deleteBoard = async ( id ) => {
 
     // Delete tasks
     const columns = await Promise.all( board.columns.map( async columnId => Column.findById( columnId ).exec() ) );
-    const tasks = columns.map( column => column.tasks );
+    const tasks = columns.map( column => column.tasks[ 0 ] );
     await Task.deleteMany( { _id: { $in: tasks } } ).exec();
 
     // Delete columns
