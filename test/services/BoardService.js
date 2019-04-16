@@ -194,6 +194,14 @@ describe( "BoardService", () => {
                 name: "Task 1",
                 column: column.id,
             } );
+            await TaskService.createTask( {
+                name: "Task 2",
+                column: column.id,
+            } );
+            await TaskService.createTask( {
+                name: "Task 3",
+                column: column.id,
+            } );
 
             const board = await BoardService.deleteBoard( id );
             const tasks = await TaskService.getTasks();
