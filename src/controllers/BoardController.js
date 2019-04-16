@@ -1,78 +1,105 @@
 const BoardService = require( "../services/BoardService" );
-const Validator = require( "../validator/Validator" );
+const validate = require( "../validators/BoardValidator" );
+const ApiError = require( "../models/Error" );
 
 /**
- * Creates a board.
- * @param {HTTPRequest} req, the request
- * @param {HTTPResponse} res, the response
+ * Gets all the boards from the database
+ *
+ * @param {HttpRequest} req the request object
+ * @param {HttpResponse} res the response object
  */
-async function createBoard( req, res ) {
-    const board = await BoardService.createBoard( req.body.projectId, req.body.name );
-    if ( !req.body.projectId ) {
-        return res.status( 400 ).json( { message: "Specify projectId" } );
-    }
-
-    res.status( 201 );
-    return res.json( { message: "Created board!", board } );
-}
+const getBoards = async ( req, res ) => {
+    const boards = await BoardService.getBoards();
+    return res.json( boards );
+};
 
 /**
- * Gets a board with populated data.
- * @param HTTPRequest req, the request
- * @param HTTPResponse res, the response
+ * Gets one board by its id
+ *
+ * @param {HttpRequest} req the request object
+ * @param {HttpResponse} res the response object
  */
-async function getBoardById( req, res ) {
-    if ( !req.params.id ) {
-        return res.status( 400 ).json( { message: "Specify the board id" } );
+const getBoardById = async ( req, res ) => {
+    if ( !validate.id( req.params.id ) ) {
+        return res.status( 400 ).json( new ApiError( "Id is invalid" ) );
     }
+
     const board = await BoardService.getBoardById( req.params.id );
-    res.status( 200 );
-    return res.json( { message: "Retrieved the board", board } );
-}
 
-async function getAll( req, res ) {
-    if ( !req.params.id ) {
-        return res.status( 400 ).json( { message: "Specify projectId" } );
+    if ( !board ) {
+        return res.status( 404 ).json( new ApiError( "Board not found" ) );
     }
-    const boards = await BoardService.getAll( req.params.id );
 
-    res.status( 200 );
-    return res.json( { message: "Retrieved all boards of the project.", boards } );
-}
+    return res.json( board );
+};
 
 /**
- * Removes a board with the given id.
- * @param {HTTPRequest} req, the request
- * @param {HTTPResponse} res, the response
+ * Creates a new board
+ *
+ * @param {HttpRequest} req the request object
+ * @param {HttpResponse} res the response object
  */
-async function deleteBoard( req, res ) {
-    if ( !req.params.id ) {
-        return res.status( 400 ).json( { message: "Specify id to delete!" } );
+const createBoard = async ( req, res ) => {
+    const errors = validate.create( req.body );
+
+    if ( Object.keys( errors ).length > 0 ) {
+        return res.status( 400 ).json( new ApiError( "One or more values are invalid", errors ) );
     }
 
-    const result = await BoardService.deleteBoard( req.params.id );
-    if ( result ) {
-        return res.status( 204 ).json( { message: "Board was successfully deleted." } );
-    }
-    return res.status( 500 ).json( { message: "Something went wrong while trying to delete the board!" } );
-}
+    const board = await BoardService.createBoard( req.body );
+
+    return res.status( 201 ).json( board );
+};
 
 /**
- * Updates the board with the given values.
- * @param {HTTPRequest} req, the request
- * @param {HTTPResponse} res, the response
+ * Updates a existing board
+ *
+ * @param {HttpRequest} req the request object
+ * @param {HttpResponse} res the response object
  */
-async function updateBoard( req, res ) {
-    const result = await Validator.validateUpdateBoardRequest( req, res );
-
-    const board = await BoardService
-        .updateBoard( req.body.id, result );
-    if ( board ) {
-        return res.status( 200 ).json( { message: "Board updated.", board } );
+const updateBoard = async ( req, res ) => {
+    if ( !validate.id( req.params.id ) ) {
+        return res.status( 400 ).json( new ApiError( "Id is invalid" ) );
     }
-    return res.status( 500 ).json( { message: "Something went wrong while trying to update the board!" } );
-}
+
+    if ( Object.keys( req.body ).length === 0 ) {
+        return res.status( 400 ).json( new ApiError( "One or more values are required" ) );
+    }
+
+    const errors = validate.update( req.body );
+    if ( Object.keys( errors ).length > 0 ) {
+        return res.status( 400 ).json( new ApiError( "One or more values are invalid", errors ) );
+    }
+
+    const board = await BoardService.updateBoard( req.params.id, req.body );
+
+    return res.status( 200 ).json( board );
+};
+
+/**
+ * Deletes a board
+ *
+ * @param {HttpRequest} req the request object
+ * @param {HttpResponse} res the response object
+ */
+const deleteBoard = async ( req, res ) => {
+    if ( !validate.id( req.params.id ) ) {
+        return res.status( 400 ).json( new ApiError( "Id is invalid" ) );
+    }
+
+    const board = await BoardService.deleteBoard( req.params.id );
+
+    if ( !board ) {
+        return res.status( 404 ).json( new ApiError( "Board not found" ) );
+    }
+
+    return res.status( 204 ).send();
+};
 
 module.exports = {
-    createBoard, getAll, updateBoard, deleteBoard, getBoardById,
+    getBoards,
+    getBoardById,
+    createBoard,
+    updateBoard,
+    deleteBoard,
 };

@@ -1,59 +1,79 @@
 const Column = require( "../models/Column" );
 const Board = require( "../models/Board" );
+const Task = require( "../models/Task" );
 
 /**
- * Creates a column for the given board.
- * @param {String} name, the name of the column
+ * Gets all columns from the database
+ *
+ * @returns a list of columns
  */
-async function createColumn( boardId, name ) {
-    if ( !name ) return null;
-    if ( !boardId ) return null;
+const getColumns = async () => Column.find();
 
-    try {
-        const column = new Column();
-        column.boardId = boardId;
-        column.name = name;
-        await column.save();
+/**
+ * Gets one column from the database
+ *
+ * @returns the column or null
+ */
+const getColumnById = async id => Column.findById( id ).populate( {
+    path: "tasks",
+} ).exec();
 
-        const board = await Board.findById( boardId ).exec();
-        board.columns.push( column.id );
+/**
+ * Creates a new column
+ *
+ * @param {Object} newColumn the column to add
+ * @returns the new column or null if an error occurred
+ */
+const createColumn = async ( newColumn ) => {
+    // Create column
+    const column = await new Column( newColumn ).save();
+
+    // Append to board
+    const board = await Board.findById( newColumn.board ).exec();
+    board.columns.push( column.id );
+    await board.save();
+
+    return column;
+};
+
+/**
+ * Updates a existing column
+ *
+ * @param {String} id the id of the column to update
+ * @param {Object} column the updated column values
+ * @returns the column board or null if an error occurred
+ */
+const updateColumn = async ( id, column ) => Column.findOneAndUpdate( { _id: id }, column, { new: true } ).exec();
+
+/**
+ * Deletes a column from the database
+ *
+ * @param {String} id the id of the column to delete
+ * @returns the deleted column or null if an error occurred
+ */
+const deleteColumn = async ( id ) => {
+    const column = await Column.findByIdAndDelete( id ).exec();
+    if ( !column ) {
+        return null;
+    }
+
+    // Delete from board
+    const board = await Board.findOne( { columns: column.id } ).exec();
+    if ( board ) {
+        board.columns = board.columns.filter( columnId => columnId !== column.id );
         await board.save();
-
-        return column;
-    } catch ( e ) {
-        return null;
     }
-}
 
-/**
- * Deletes a board from the database.
- * @param {String} id, the id of the board.
- */
-async function deleteColumn( id ) {
-    try {
-        if ( id ) {
-            await Column.deleteOne( { _id: id } ).exec();
-            return true;
-        }
-        return false;
-    } catch ( e ) {
-        return false;
-    }
-}
+    // Delete tasks
+    await Task.deleteMany( { _id: { $in: column.tasks } } ).exec();
 
-/**
- * Return a list of all the columns that are in a board.
- * @param {String} boardId, the id of the board.
- */
-async function getColumnsForBoardId( boardId ) {
-    try {
-        const columns = await Column.find( { boardId } ).exec();
-        return columns;
-    } catch ( e ) {
-        return null;
-    }
-}
+    return column;
+};
 
 module.exports = {
-    createColumn, deleteColumn, getColumnsForBoardId,
+    getColumns,
+    getColumnById,
+    createColumn,
+    updateColumn,
+    deleteColumn,
 };

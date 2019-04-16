@@ -1,126 +1,240 @@
-const { expect } = require( "chai" );
-const mongoUnit = require( "mongo-unit" );
+const { expect, should } = require( "chai" );
 
-const testMongoUrl = process.env.MONGO_URI;
-const testMongoDB = process.env.MONGO_DB;
-const chai = require( "chai" );
+const ColumnService = require( "../../src/services/ColumnService" );
+const BoardService = require( "../../src/services/BoardService" );
+const TaskService = require( "../../src/services/TaskService" );
 
-const should = chai.should();
-const boardService = require( "../../src/services/BoardService" );
-const columnService = require( "../../src/services/ColumnService" );
-const service = require( "../../src/services/TaskService" );
+let columnId;
 
 describe( "TaskService", () => {
-    const testData = {};
-    beforeEach( () => mongoUnit.initDb( testMongoUrl + testMongoDB, {} ) );
-    afterEach( () => mongoUnit.drop() );
     beforeEach( async () => {
-        const boardName = "Board 1";
-        const projectId = 1;
-        const board = await boardService.createBoard( projectId, boardName );
-        testData.boardId = board.id;
-        const columnName = "Test column";
-        const { boardId } = testData;
-        const column = await columnService.createColumn( boardId, columnName );
-        testData.columnId = column.id;
+        const newBoard = {
+            name: "Board 1",
+            project: "04625ae0-4ea0-4fcf-9f67-26125961b63f",
+        };
+        const board = await BoardService.createBoard( newBoard );
+
+        const newColumn = {
+            name: "Column 1",
+            board: board.id,
+        };
+        const column = await ColumnService.createColumn( newColumn );
+
+        columnId = column.id;
     } );
 
-    describe( "/create", () => {
-        it( "should create a task", async () => {
-            const taskName = "Test task";
-            const { columnId } = testData;
-            const task = await service.createTask( columnId, taskName );
-            expect( task.name ).to.equal( taskName );
-            should.exist( task.id );
-        } );
-
-        it( "should not create a task without a valid columnId", async () => {
-            const taskName = "Test name";
-            const columnId = "";
-            const task = await service.createTask( columnId, taskName );
-            should.not.exist( task );
-        } );
-
-        it( "should not create a task without a valid name", async () => {
-            const taskName = "";
-            const { columnId } = testData;
-            const task = await service.createTask( columnId, taskName );
-            should.not.exist( task );
-        } );
-
-        it( "should get all tasks of a column", async () => {
-            const { columnId } = testData;
-            await service.createTask( columnId, "Column 1" );
-            await service.createTask( columnId, "Column 2" );
-
-            const tasks = await service.getTasksForColumn( columnId );
-            should.exist( tasks );
-            expect( tasks.length ).to.equal( 2 );
-            tasks.forEach( ( task ) => {
-                should.exist( task.id );
-                expect( task.columnId.toString() ).to.equal( columnId );
-            } );
-        } );
-    } );
-
-    describe( "/delete", () => {
-        it( "should delete a task", async () => {
-            const { columnId } = testData;
-            const board = await service.createTask( columnId, "Test task" );
-            expect( board ).to.not.equal( null );
-            const result = await service.deleteTask( board.id );
-            expect( result ).to.equal( true );
-        } );
-
-        it( "should return false", async () => {
-            const result = await service.deleteTask( "badId" );
-            expect( result ).to.equal( false );
-        } );
-    } );
-    describe( "/update", () => {
-        let task;
+    describe( "getTasks", () => {
         beforeEach( async () => {
-            const taskName = "Test task";
-            const columnId = "5c9a6b81c5325f3df029066d";
-            task = await service.createTask( columnId, taskName );
+            const newTask1 = {
+                name: "Task 1",
+                column: columnId,
+            };
+            const newTask2 = {
+                name: "Task 2",
+                column: columnId,
+            };
+
+            await TaskService.createTask( newTask1 );
+            await TaskService.createTask( newTask2 );
         } );
 
-        it( "Should update a task", async () => {
-            expect( task ).to.not.equal( null );
-            const newValues = { name: "New name", description: "desc" };
-            const result = await service.updateTask( task.id, newValues );
-            should.exist( result );
-            expect( result.name ).to.equal( newValues.name );
-            expect( result.description ).to.equal( newValues.description );
+        it( "should return all tasks", async () => {
+            const tasks = await TaskService.getTasks();
+
+            expect( tasks.length ).to.equal( 2 );
+            expect( tasks[ 0 ].name ).to.equal( "Task 1" );
+            expect( tasks[ 1 ].name ).to.equal( "Task 2" );
+        } );
+    } );
+
+    describe( "getTaskById", () => {
+        it( "should return one task", async () => {
+            const newTask = {
+                name: "Task 1",
+                column: columnId,
+            };
+            const { id } = await TaskService.createTask( newTask );
+
+            const task = await TaskService.getTaskById( id );
+
+            expect( task.name ).to.equal( newTask.name );
+            expect( task.description ).to.equal( "" );
+            expect( task.hours ).to.equal( 0 );
         } );
 
-        it( "Should update a task hours only", async () => {
-            expect( task ).to.not.equal( null );
-            const newValues = { hours: 10 };
-            const result = await service.updateTask( task.id, newValues );
-            should.exist( result );
-            expect( result.hours ).to.equal( newValues.hours );
+        it( "should return null if not found", async () => {
+            const task = await TaskService.getTaskById( "8d50a412-3f38-458e-be0e-06f0e084afb7" );
+
+            should().not.exist( task );
         } );
-        it( "Should update a task column only", async () => {
-            expect( task ).to.not.equal( null );
-            const newValues = { columnId: "5c9a6b81c5325f3df029066d" };
-            const result = await service.updateTask( task.id, newValues );
-            should.exist( result );
-            expect( result.columnId.toString() ).to.equal( newValues.columnId );
+    } );
+
+    describe( "createTask", () => {
+        it( "should create a task", async () => {
+            const newTask = {
+                name: "Task 1",
+                description: "Description 1",
+                column: columnId,
+            };
+
+            const task = await TaskService.createTask( newTask );
+
+            expect( task.name ).to.equal( newTask.name );
+            expect( task.description ).to.equal( newTask.description );
+            expect( task.hours ).to.equal( 0 );
         } );
-        it( "Should update a task name only", async () => {
-            expect( task ).to.not.equal( null );
-            const newValues = { name: "New" };
-            const result = await service.updateTask( task.id, newValues );
-            should.exist( result );
-            expect( result.name ).to.equal( newValues.name );
+
+        it( "should add the task to the column", async () => {
+            const newTask = {
+                name: "Task 1",
+                description: "Description 1",
+                column: columnId,
+            };
+            const task = await TaskService.createTask( newTask );
+
+            const column = await ColumnService.getColumnById( columnId );
+
+            expect( column.tasks.length ).to.equal( 1 );
+            expect( column.tasks[ 0 ].id ).to.equal( task.id );
+            expect( column.tasks[ 0 ].name ).to.equal( newTask.name );
+            expect( column.tasks[ 0 ].description ).to.equal( newTask.description );
+            expect( column.tasks[ 0 ].hours ).to.equal( 0 );
         } );
-        it( "Should update a task description only", async () => {
-            expect( task ).to.not.equal( null );
-            const newValues = { description: "New" };
-            const result = await service.updateTask( task.id, newValues );
-            should.exist( result );
-            expect( result.description ).to.equal( newValues.description );
+    } );
+
+    describe( "updateTask", () => {
+        it( "should update a task", async () => {
+            const newTask = {
+                name: "Task 1",
+                description: "Description 1",
+                column: columnId,
+            };
+            const { id } = await TaskService.createTask( newTask );
+
+            const task = await TaskService.updateTask( id, {
+                name: "Task 2",
+                description: "Description 2",
+                assignees: [
+                    "c23d2040-c662-4ceb-929d-1416e85f3d8b",
+                ],
+                hours: 1,
+            } );
+
+            expect( task.name ).to.equal( "Task 2" );
+            expect( task.description ).to.equal( "Description 2" );
+            expect( task.assignees.length ).to.equal( 1 );
+            expect( task.assignees[ 0 ] ).to.equal( "c23d2040-c662-4ceb-929d-1416e85f3d8b" );
+            expect( task.hours ).to.equal( 1 );
+        } );
+
+        it( "should update a task only name", async () => {
+            const newTask = {
+                name: "Task 1",
+                description: "Description 1",
+                column: columnId,
+            };
+            const { id } = await TaskService.createTask( newTask );
+
+            const task = await TaskService.updateTask( id, {
+                name: "Task 2",
+            } );
+
+            expect( task.name ).to.equal( "Task 2" );
+        } );
+
+        it( "should update a task only description", async () => {
+            const newTask = {
+                name: "Task 1",
+                description: "Description 1",
+                column: columnId,
+            };
+            const { id } = await TaskService.createTask( newTask );
+
+            const task = await TaskService.updateTask( id, {
+                description: "Description 2",
+            } );
+
+            expect( task.description ).to.equal( "Description 2" );
+        } );
+
+        it( "should update a task only assignees", async () => {
+            const newTask = {
+                name: "Task 1",
+                description: "Description 1",
+                column: columnId,
+            };
+            const { id } = await TaskService.createTask( newTask );
+
+            const task = await TaskService.updateTask( id, {
+                assignees: [
+                    "c23d2040-c662-4ceb-929d-1416e85f3d8b",
+                ],
+            } );
+
+            expect( task.assignees.length ).to.equal( 1 );
+            expect( task.assignees[ 0 ] ).to.equal( "c23d2040-c662-4ceb-929d-1416e85f3d8b" );
+        } );
+
+        it( "should update a task only hours", async () => {
+            const newTask = {
+                name: "Task 1",
+                description: "Description 1",
+                column: columnId,
+            };
+            const { id } = await TaskService.createTask( newTask );
+
+            const task = await TaskService.updateTask( id, {
+                hours: 1,
+            } );
+
+            expect( task.hours ).to.equal( 1 );
+        } );
+
+        it( "should not update a task without task id", async () => {
+            const task = await TaskService.updateTask( "invalid", {
+                name: "Task 2",
+                description: "Description 2",
+                assignees: [
+                    "c23d2040-c662-4ceb-929d-1416e85f3d8b",
+                ],
+                hours: 1,
+            } );
+
+            should().not.exist( task );
+        } );
+    } );
+
+    describe( "deleteTask", () => {
+        it( "should delete a task", async () => {
+            const newTask = {
+                name: "Task 1",
+                column: columnId,
+            };
+            const { id } = await TaskService.createTask( newTask );
+
+            const task = await TaskService.deleteTask( id );
+
+            expect( task.name ).to.equal( newTask.name );
+        } );
+
+        it( "should remove task from column", async () => {
+            const newTask = {
+                name: "Task 1",
+                column: columnId,
+            };
+            const { id } = await TaskService.createTask( newTask );
+
+            const task = await TaskService.deleteTask( id );
+            const column = await ColumnService.getColumnById( columnId );
+
+            expect( task.name ).to.equal( newTask.name );
+            expect( column.tasks.length ).to.equal( 0 );
+        } );
+
+        it( "should not delete task with invalid id", async () => {
+            const task = await TaskService.deleteTask( "invalid" );
+
+            should().not.exist( task );
         } );
     } );
 } );

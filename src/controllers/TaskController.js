@@ -1,87 +1,105 @@
 const TaskService = require( "../services/TaskService" );
+const validate = require( "../validators/TaskValidator" );
+const ApiError = require( "../models/Error" );
 
 /**
- * Creates a task.
- * @param {HTTPRequest} req, the request
- * @param {HTTPResponse} res, the response
+ * Gets all the tasks from the database
+ *
+ * @param {HttpRequest} req the request object
+ * @param {HttpResponse} res the response object
  */
-async function createTask( req, res ) {
-    if ( !req.body.columnId ) {
-        return res.status( 400 ).json( { message: "Specify columnId" } );
+const getTasks = async ( req, res ) => {
+    const tasks = await TaskService.getTasks();
+    return res.json( tasks );
+};
+
+/**
+ * Gets one task by its id
+ *
+ * @param {HttpRequest} req the request object
+ * @param {HttpResponse} res the response object
+ */
+const getTaskById = async ( req, res ) => {
+    if ( !validate.id( req.params.id ) ) {
+        return res.status( 400 ).json( new ApiError( "Id is invalid" ) );
     }
 
-    if ( !req.body.name ) {
-        return res.status( 400 ).json( { message: "Specify name" } );
+    const task = await TaskService.getTaskById( req.params.id );
+
+    if ( !task ) {
+        return res.status( 404 ).json( new ApiError( "Task not found" ) );
     }
 
-    const task = await TaskService.createTask( req.body.columnId,
-        req.body.name, req.body.description );
-    if ( task ) {
-        res.status( 201 );
-        return res.json( { message: "Created the task!", task } );
+    return res.json( task );
+};
+
+/**
+ * Creates a new task
+ *
+ * @param {HttpRequest} req the request object
+ * @param {HttpResponse} res the response object
+ */
+const createTask = async ( req, res ) => {
+    const errors = validate.create( req.body );
+
+    if ( Object.keys( errors ).length > 0 ) {
+        return res.status( 400 ).json( new ApiError( "One or more values are invalid", errors ) );
     }
-    return res.status( 500 ).json( { message: "Something went wrong while trying to create the task." } );
-}
+
+    const task = await TaskService.createTask( req.body );
+
+    return res.status( 201 ).json( task );
+};
+
+/**
+ * Updates a existing task
+ *
+ * @param {HttpRequest} req the request object
+ * @param {HttpResponse} res the response object
+ */
+const updateTask = async ( req, res ) => {
+    if ( !validate.id( req.params.id ) ) {
+        return res.status( 400 ).json( new ApiError( "Id is invalid" ) );
+    }
+
+    if ( Object.keys( req.body ).length === 0 ) {
+        return res.status( 400 ).json( new ApiError( "One or more values are required" ) );
+    }
+
+    const errors = validate.update( req.body );
+    if ( Object.keys( errors ).length > 0 ) {
+        return res.status( 400 ).json( new ApiError( "One or more values are invalid", errors ) );
+    }
+
+    const task = await TaskService.updateTask( req.params.id, req.body );
+
+    return res.status( 200 ).json( task );
+};
 
 /**
  * Deletes a task
- * @param {HTTPRequest} req, the request
- * @param {HTTPResponse} res, the response
+ *
+ * @param {HttpRequest} req the request object
+ * @param {HttpResponse} res the response object
  */
-async function deleteTask( req, res ) {
-    if ( !req.params.id ) {
-        return res.status( 400 ).json( { message: "Specify id to delete!" } );
+const deleteTask = async ( req, res ) => {
+    if ( !validate.id( req.params.id ) ) {
+        return res.status( 400 ).json( new ApiError( "Id is invalid" ) );
     }
 
-    const result = await TaskService.deleteTask( req.params.id );
-    if ( result ) {
-        return res.status( 204 ).json( { message: "Task was successfully deleted." } );
-    }
-    return res.status( 500 ).json( { message: "Something went wrong while trying to delete the task!" } );
-}
+    const task = await TaskService.deleteTask( req.params.id );
 
-/**
- * Retrieves all the columns for the given column id.
- * @param {HTTPRequest} req, the request
- * @param {HTTPResponse} res, the response
- */
-async function getTasksForColumn( req, res ) {
-    if ( !req.params.columnId ) {
-        return res.status( 400 ).json( { message: "Specify a column id!" } );
+    if ( !task ) {
+        return res.status( 404 ).json( new ApiError( "Task not found" ) );
     }
 
-    const result = await TaskService.getTasksForColumn( req.params.columnId );
-    if ( result ) {
-        return res.status( 200 ).json( { message: "Tasks were successfully retrieved.", tasks: result } );
-    }
-    return res.status( 500 ).json( { message: "Something went wrong while trying to get the columns for the board!" } );
-}
-
-/**
- * Updates the board with the given values.
- * @param {HTTPRequest} req, the request
- * @param {HTTPResponse} res, the response
- */
-// eslint-disable-next-line complexity
-async function updateTask( req, res ) {
-    if ( !req.body.id ) {
-        return res.status( 400 ).json( { message: "Specify id to update!" } );
-    }
-
-    if ( !req.body.name && !req.body.columnId && !req.body.description && !req.body.assignees && !req.body.hours && !req.body.columnId ) {
-        return res.status( 400 ).json( { message: "Specify the new changes to add!" } );
-    }
-
-    const task = await TaskService
-        .updateTask( req.body.id, {
-            name: req.body.name, columnId: req.body.columnId, status: req.body.status, assignees: req.body.assignees, hours: req.body.hours,
-        } );
-    if ( task ) {
-        return res.status( 200 ).json( { message: "Task updated.", task } );
-    }
-    return res.status( 500 ).json( { message: "Something went wrong while trying to update the board!" } );
-}
+    return res.status( 204 ).send();
+};
 
 module.exports = {
-    createTask, deleteTask, getTasksForColumn, updateTask,
+    getTasks,
+    getTaskById,
+    createTask,
+    updateTask,
+    deleteTask,
 };

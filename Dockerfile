@@ -4,6 +4,7 @@ FROM node:9.6.1-alpine
 WORKDIR /app
 
 # Install dependencies
+ENV NODE_ENV production
 ENV PATH /app/node_modules/.bin:$PATH
 COPY package.json /app/package.json
 RUN npm config set unsafe-perm true

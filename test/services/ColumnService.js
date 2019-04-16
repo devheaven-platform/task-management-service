@@ -1,80 +1,166 @@
-const { expect } = require( "chai" );
-const mongoUnit = require( "mongo-unit" );
+const { expect, should } = require( "chai" );
 
-const testMongoUrl = process.env.MONGO_URI;
-const testMongoDB = process.env.MONGO_DB;
-const chai = require( "chai" );
+const ColumnService = require( "../../src/services/ColumnService" );
+const BoardService = require( "../../src/services/BoardService" );
+const TaskService = require( "../../src/services/TaskService" );
 
-const should = chai.should();
-const service = require( "../../src/services/ColumnService" );
-const boardService = require( "../../src/services/BoardService" );
+let boardId;
 
 describe( "ColumnService", () => {
-    const testData = {};
-    beforeEach( () => mongoUnit.initDb( testMongoUrl + testMongoDB, {} ) );
-    afterEach( () => mongoUnit.drop() );
-    before( async () => {
-        const boardName = "Board 1";
-        const projectId = 1;
-        const board = await boardService.createBoard( projectId, boardName );
-        expect( board.name ).to.equal( boardName );
-        should.exist( board.id );
-        testData.boardId = board.id;
+    beforeEach( async () => {
+        const newBoard = {
+            name: "Board 1",
+            project: "04625ae0-4ea0-4fcf-9f67-26125961b63f",
+        };
+        const { id } = await BoardService.createBoard( newBoard );
+
+        boardId = id;
     } );
 
-    describe( "/create", () => {
-        it( "should create a column", async () => {
-            const columnName = "Test column";
-            const { boardId } = testData;
-            const column = await service.createColumn( boardId, columnName );
-            expect( column.name ).to.equal( columnName );
-            should.exist( column.id );
+    describe( "getColumns", () => {
+        beforeEach( async () => {
+            const newColumn1 = {
+                name: "Column 1",
+                board: boardId,
+            };
+            const newColumn2 = {
+                name: "Column 2",
+                board: boardId,
+            };
+
+            await ColumnService.createColumn( newColumn1 );
+            await ColumnService.createColumn( newColumn2 );
         } );
 
-        it( "should not create a column without a valid boardId", async () => {
-            const columnName = "Test name";
-            const boardId = "";
-            const column = await service.createColumn( boardId, columnName );
-            should.not.exist( column );
-        } );
+        it( "should return all columns", async () => {
+            const columns = await ColumnService.getColumns();
 
-        it( "should not create a column without a valid name", async () => {
-            const columnName = "";
-            const { boardId } = testData;
-            const column = await service.createColumn( boardId, columnName );
-            should.not.exist( column );
-        } );
-
-        it( "should get all columns of a board", async () => {
-            const { boardId } = testData;
-            await service.createColumn( boardId, "Column 1" );
-            await service.createColumn( boardId, "Column 2" );
-
-            const columns = await service.getColumnsForBoardId( boardId );
-            should.exist( columns );
             expect( columns.length ).to.equal( 2 );
-            columns.forEach( ( column ) => {
-                should.exist( column.id );
-                expect( column.boardId.toString() ).to.equal( boardId );
-            } );
+            expect( columns[ 0 ].name ).to.equal( "Column 1" );
+            expect( columns[ 1 ].name ).to.equal( "Column 2" );
         } );
     } );
 
-    describe( "/delete", () => {
-        it( "should delete a column", async () => {
-            const boardName = "Board 1";
-            const projectId = 1;
-            const board = await boardService.createBoard( projectId, boardName );
-            const boardId = board.id;
-            const column = await service.createColumn( boardId, "Test column" );
-            expect( column ).to.not.equal( null );
-            const result = await service.deleteColumn( column.id );
-            expect( result ).to.equal( true );
+    describe( "getColumnById", () => {
+        it( "should return one column", async () => {
+            const newColumn = {
+                name: "Column 1",
+                board: boardId,
+            };
+            const { id } = await ColumnService.createColumn( newColumn );
+
+            const column = await ColumnService.getColumnById( id );
+
+            expect( column.name ).to.equal( newColumn.name );
         } );
 
-        it( "should return false", async () => {
-            const result = await service.deleteColumn( "badId" );
-            expect( result ).to.equal( false );
+        it( "should return null if not found", async () => {
+            const column = await ColumnService.getColumnById( "8d50a412-3f38-458e-be0e-06f0e084afb7" );
+
+            should().not.exist( column );
+        } );
+    } );
+
+    describe( "createColumn", () => {
+        it( "should create a column", async () => {
+            const newColumn = {
+                name: "Column 1",
+                board: boardId,
+            };
+
+            const column = await ColumnService.createColumn( newColumn );
+
+            expect( column.name ).to.equal( newColumn.name );
+        } );
+
+        it( "should add the column to the board", async () => {
+            const newColumn = {
+                name: "Column 1",
+                board: boardId,
+            };
+            const column = await ColumnService.createColumn( newColumn );
+
+            const board = await BoardService.getBoardById( boardId );
+
+            expect( board.columns.length ).to.equal( 1 );
+            expect( board.columns[ 0 ].id ).to.equal( column.id );
+            expect( board.columns[ 0 ].name ).to.equal( column.name );
+        } );
+    } );
+
+    describe( "updateColumn", () => {
+        it( "should update a column", async () => {
+            const newColumn = {
+                name: "Column 1",
+                board: boardId,
+            };
+            const { id } = await ColumnService.createColumn( newColumn );
+
+            const column = await ColumnService.updateColumn( id, {
+                name: "Column 2",
+            } );
+
+            expect( column.name ).to.equal( "Column 2" );
+        } );
+
+        it( "should not update a column without column id", async () => {
+            const column = await ColumnService.updateColumn( "invalid", {
+                name: "Column 2",
+            } );
+
+            should().not.exist( column );
+        } );
+    } );
+
+    describe( "deleteColumn", () => {
+        it( "should delete a column", async () => {
+            const newColumn = {
+                name: "Column 1",
+                board: boardId,
+            };
+            const { id } = await ColumnService.createColumn( newColumn );
+
+            const column = await ColumnService.deleteColumn( id );
+
+            expect( column.name ).to.equal( newColumn.name );
+        } );
+
+        it( "should remove column from board", async () => {
+            const newColumn = {
+                name: "Column 1",
+                board: boardId,
+            };
+            const { id } = await ColumnService.createColumn( newColumn );
+
+            const column = await ColumnService.deleteColumn( id );
+            const board = await BoardService.getBoardById( boardId );
+
+            expect( column.name ).to.equal( newColumn.name );
+            expect( board.columns.length ).to.equal( 0 );
+        } );
+
+        it( "should delete a column tasks", async () => {
+            const newColumn = {
+                name: "Column 1",
+                board: boardId,
+            };
+            const { id } = await ColumnService.createColumn( newColumn );
+            await TaskService.createTask( {
+                name: "Task 1",
+                column: id,
+            } );
+
+            const column = await ColumnService.deleteColumn( id );
+            const tasks = await TaskService.getTasks();
+
+            expect( column.name ).to.equal( newColumn.name );
+            expect( tasks.length ).to.equal( 0 );
+        } );
+
+        it( "should not delete column with invalid id", async () => {
+            const column = await ColumnService.deleteColumn( "invalid" );
+
+            should().not.exist( column );
         } );
     } );
 } );
