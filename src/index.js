@@ -14,8 +14,8 @@ const app = express();
 app.disable( "x-powered-by" );
 
 // Server config
-const port = process.env.PORT;
-const host = process.env.HOSTNAME;
+const port = process.env.NODE_PORT;
+const host = process.env.NODE_HOST;
 const mongoDB = process.env.MONGO_DB;
 const mongoURI = process.env.MONGO_URI;
 
