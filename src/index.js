@@ -21,7 +21,7 @@ const mongoURI = process.env.MONGO_URI;
 
 // Middleware
 app.use( bodyparser.json() );
-app.use( cors() );
+app.use( cors( { origin: "*" } ) );
 
 // Connect database
 mongoose
