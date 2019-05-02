@@ -22,14 +22,17 @@ const uuid = require( "uuid" );
  *           description: A list containing all the tasks id's
  *           items:
  *             type: string
+ *         position:
+ *           type: number
+ *           description: The position the column is in
  *         createdAt:
- *            type: string
- *            description: The date a column was created on
- *            example: 2019-01-01T00:00:00.000Z
+ *           type: string
+ *           description: The date a column was created on
+ *           example: 2019-01-01T00:00:00.000Z
  *         updatedAt:
- *            type: string
- *            description: The date a column was last updated on
- *            example: 2019-01-01T00:00:00.000Z
+ *           type: string
+ *           description: The date a column was last updated on
+ *           example: 2019-01-01T00:00:00.000Z
  *       required:
  *         - id
  *         - name
@@ -49,6 +52,10 @@ const Column = new mongoose.Schema( {
         type: String,
         ref: "Task",
     } ],
+    position: {
+        type: Number,
+        default: 0,
+    },
 }, { timestamps: true } );
 
 Column.set( "toJSON", {
