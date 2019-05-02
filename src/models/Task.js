@@ -30,6 +30,9 @@ const uuid = require( "uuid" );
  *           type: number
  *           description: The amount of hours a task should take
  *           example: 2
+ *         position:
+ *           type: number
+ *           description: The position the t ask is in
  *         createdAt:
  *            type: string
  *            description: The date a task was created on
@@ -61,6 +64,10 @@ const Task = new mongoose.Schema( {
         type: String,
     } ],
     hours: {
+        type: Number,
+        default: 0,
+    },
+    position: {
         type: Number,
         default: 0,
     },
