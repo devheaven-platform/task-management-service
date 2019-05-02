@@ -134,6 +134,10 @@ router.post( "/", asyncMiddleware( controller.createColumn ) );
  *                  type: string
  *                  description: The name of the column
  *                  example: To Do
+ *                position:
+ *                  type: number
+ *                  description: The position of the column
+ *                  example: 1
  *      responses:
  *          '200':
  *            description: OK
