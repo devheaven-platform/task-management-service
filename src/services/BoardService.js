@@ -52,7 +52,12 @@ const createBoard = async ( newBoard ) => {
  * @param {Object} board the updated board values
  * @returns the updated board or null if an error occurred
  */
-const updateBoard = async ( id, board ) => Board.findOneAndUpdate( { _id: id }, board, { new: true } ).exec();
+const updateBoard = async ( id, board ) => Board.findOneAndUpdate( { _id: id }, board, { new: true } ).populate( {
+    path: "columns",
+    populate: {
+        path: "tasks",
+    },
+} ).exec();
 
 /**
  * Deletes a board from the database and calls the
