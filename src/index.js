@@ -7,8 +7,8 @@ const express = require( "express" );
 const cors = require( "cors" );
 require( "dotenv" ).config();
 
-const logger = require( "./config/logger" );
-const specs = require( "./config/swagger" );
+const logger = require( "./config/logger/Logger" );
+const specs = require( "./config/swagger/Swagger" );
 
 const app = express();
 app.disable( "x-powered-by" );
