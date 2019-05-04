@@ -151,10 +151,6 @@ router.post( "/", asyncMiddleware( controller.createTask ) );
  *                  type: number
  *                  description: The amount of hours a task should take
  *                  example: 2
- *                position:
- *                  type: number
- *                  description: The position of the task
- *                  example: 1
  *      responses:
  *          '200':
  *            description: OK

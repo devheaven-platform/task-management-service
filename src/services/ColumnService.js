@@ -43,7 +43,7 @@ const createColumn = async ( newColumn ) => {
  * @param {Object} column the updated column values
  * @returns the column board or null if an error occurred
  */
-const updateColumn = async ( id, column ) => Column.findOneAndUpdate( { _id: id }, column, { new: true } ).exec();
+const updateColumn = async ( id, column ) => Column.findOneAndUpdate( { _id: id }, column, { new: true } ).populate( "tasks" ).exec();
 
 /**
  * Deletes a column from the database
