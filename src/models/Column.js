@@ -23,13 +23,13 @@ const uuid = require( "uuid" );
  *           items:
  *             type: string
  *         createdAt:
- *            type: string
- *            description: The date a column was created on
- *            example: 2019-01-01T00:00:00.000Z
+ *           type: string
+ *           description: The date a column was created on
+ *           example: 2019-01-01T00:00:00.000Z
  *         updatedAt:
- *            type: string
- *            description: The date a column was last updated on
- *            example: 2019-01-01T00:00:00.000Z
+ *           type: string
+ *           description: The date a column was last updated on
+ *           example: 2019-01-01T00:00:00.000Z
  *       required:
  *         - id
  *         - name
