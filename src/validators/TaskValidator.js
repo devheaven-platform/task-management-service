@@ -22,11 +22,9 @@ const create = ( body ) => {
         errors.name = "Name must be between 2 and 20 characters";
     }
 
-    if ( body.description !== undefined ) {
+    if ( body.description !== undefined && body.description.trim() !== "" ) {
         if ( !GenericValidator.isString( body.description ) ) {
             errors.description = "Description must be of type string";
-        } else if ( body.description.trim() === "" ) {
-            errors.description = "Description cannot be a empty string";
         } else if ( !validator.isLength( body.description, { min: 2, max: 250 } ) ) {
             errors.description = "Description must be between 2 and 250 characters";
         }
@@ -58,11 +56,9 @@ const update = ( body ) => {
         }
     }
 
-    if ( body.description !== undefined ) {
+    if ( body.description !== undefined && body.description.trim() !== "" ) {
         if ( !GenericValidator.isString( body.description ) ) {
             errors.description = "Description must be of type string";
-        } else if ( body.description.trim() === "" ) {
-            errors.description = "Description cannot be a empty string";
         } else if ( !validator.isLength( body.description, { min: 2, max: 250 } ) ) {
             errors.description = "Description must be between 2 and 250 characters";
         }
