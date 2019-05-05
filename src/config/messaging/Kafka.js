@@ -22,6 +22,12 @@ const kafka = new Kafka( {
 } );
 
 class MessageConsumer {
+    /**
+     * Constructor for the message consumer.
+     *
+     * @param {String} topic the topic to listen on.
+     * @param {Function} handler the handler function to call.
+     */
     constructor( topic, handler ) {
         if ( env !== "test" ) {
             this.topic = topic;
@@ -35,6 +41,9 @@ class MessageConsumer {
         }
     }
 
+    /**
+     * Connects the consumer to the kafka server.
+     */
     async connect() {
         await this.consumer.connect();
         await this.consumer.subscribe( { topic: this.topic } );
@@ -43,6 +52,9 @@ class MessageConsumer {
         } );
     }
 
+    /**
+     * Handles errors on the kafka server.
+     */
     handleError() {
         errors.map( type => process.on( type, async ( error ) => {
             try {
@@ -55,6 +67,9 @@ class MessageConsumer {
         } ) );
     }
 
+    /**
+     * Handles exit event.
+     */
     handleExit() {
         signals.map( type => process.once( type, async () => {
             try {
@@ -78,10 +93,19 @@ class MessageProducer {
         }
     }
 
+    /**
+     * Connects the producer to the kafka server.
+     */
     async connect() {
         await this.producer.connect();
     }
 
+    /**
+     * The sends a message to a topic.
+     *
+     * @param {String} topic the topic to send the message to.
+     * @param {String} message the message to send.
+     */
     send( topic, message ) {
         return this.producer.send( {
             topic,
@@ -91,6 +115,9 @@ class MessageProducer {
         } );
     }
 
+    /**
+     * Handles errors on the kafka server.
+     */
     handleError() {
         errors.map( type => process.on( type, async ( processError ) => {
             try {
@@ -103,6 +130,9 @@ class MessageProducer {
         } ) );
     }
 
+    /**
+     * Handles exit event.
+     */
     handleExit() {
         signals.map( type => process.once( type, async () => {
             try {
