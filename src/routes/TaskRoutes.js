@@ -1,6 +1,6 @@
 const express = require( "express" );
 
-const asyncMiddleware = require( "../config/middleware/async" );
+const asyncMiddleware = require( "../config/middleware/Async" );
 const controller = require( "../controllers/TaskController" );
 
 /**

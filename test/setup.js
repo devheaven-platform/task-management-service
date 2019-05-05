@@ -1,5 +1,8 @@
 const mongoose = require( "mongoose" );
 const { MongoMemoryServer } = require( "mongodb-memory-server" );
+const sinon = require( "sinon" );
+
+const { MessageProducer } = require( "../src/config/messaging/Kafka" );
 
 let mongoServer;
 
@@ -13,6 +16,7 @@ before( ( done ) => {
         } )
             .then( done() )
             .catch( error => done( error ) ) );
+    sinon.stub( MessageProducer.prototype, "send" ).callsFake( () => {} );
 } );
 
 after( () => {
