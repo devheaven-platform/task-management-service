@@ -5,6 +5,7 @@ const converter = require( "../logger/Converter" );
 
 const errors = [ "unhandledRejection", "uncaughtException" ];
 const signals = [ "SIGTERM", "SIGINT", "SIGUSR2" ];
+const env = process.env.NODE_ENV;
 const host = process.env.KAFKA_HOST;
 const groupId = process.env.KAFKA_GROUP_ID;
 
@@ -22,14 +23,16 @@ const kafka = new Kafka( {
 
 class MessageConsumer {
     constructor( topic, handler ) {
-        this.topic = topic;
-        this.handler = handler;
-        this.consumer = kafka.consumer( { groupId } );
+        if ( env !== "test" ) {
+            this.topic = topic;
+            this.handler = handler;
+            this.consumer = kafka.consumer( { groupId } );
 
-        this.connect().catch( error => logger.error( error.stack ) );
+            this.connect().catch( error => logger.error( error.stack ) );
 
-        this.handleError();
-        this.handleExit();
+            this.handleError();
+            this.handleExit();
+        }
     }
 
     async connect() {
@@ -65,12 +68,14 @@ class MessageConsumer {
 
 class MessageProducer {
     constructor() {
-        this.producer = kafka.producer();
+        if ( env !== "test" ) {
+            this.producer = kafka.producer();
 
-        this.connect();
+            this.connect();
 
-        this.handleError();
-        this.handleExit();
+            this.handleError();
+            this.handleExit();
+        }
     }
 
     async connect() {
