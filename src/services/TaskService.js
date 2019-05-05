@@ -37,7 +37,7 @@ const createTask = async ( newTask ) => {
  * Updates a existing task
  *
  * @param {String} id the id of the task to update
- * @param {Object} column the updated task values
+ * @param {Object} task the updated task values
  * @returns the task board or null if an error occurred
  */
 const updateTask = async ( id, task ) => Task.findOneAndUpdate( { _id: id }, task, { new: true } ).exec();
