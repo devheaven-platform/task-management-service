@@ -1,4 +1,6 @@
 # Task Management Service
+[![Build Status](http://drone.devheaven.nl/api/badges/devheaven-platform/task-management-service/status.svg)](http://drone.devheaven.nl/devheaven-platform/task-management-service)
+
 This repository contains the task management service for the DevHeaven platform.
 
 # Contribution

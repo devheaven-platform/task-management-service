@@ -1,6 +1,10 @@
+/* eslint-disable no-new, no-restricted-syntax, no-await-in-loop */
+const { MessageConsumer, MessageProducer } = require( "../config/messaging/Kafka" );
 const Column = require( "../models/Column" );
 const Board = require( "../models/Board" );
 const Task = require( "../models/Task" );
+
+const producer = new MessageProducer();
 
 /**
  * Gets all boards from the database
@@ -30,9 +34,13 @@ const getBoardById = async id => Board.findById( id ).populate( {
  * @returns the new board or null if an error occurred
  */
 const createBoard = async ( newBoard ) => {
-    const board = new Board( newBoard ).save();
+    const board = await new Board( newBoard ).save();
 
-    // TODO: send event to project-management-service to add board to project
+    // Add to project
+    await producer.send( "db.task-management.create-board", {
+        board: board.id,
+        project: newBoard.project,
+    } );
 
     return board;
 };
@@ -54,13 +62,18 @@ const updateBoard = async ( id, board ) => Board.findOneAndUpdate( { _id: id }, 
  * @param {String} id the id of the board to delete
  * @returns the deleted board or null if an error occurred
  */
-const deleteBoard = async ( id ) => {
+const deleteBoard = async ( id, emit = true ) => {
     const board = await Board.findByIdAndRemove( id ).exec();
     if ( !board ) {
         return null;
     }
 
-    // TODO: send event to project-management-service to delete board from project
+    // Delete from project
+    if ( emit ) {
+        await producer.send( "db.task-management.delete-board", {
+            board: board.id,
+        } );
+    }
 
     // Delete tasks
     const columns = await Promise.all( board.columns.map( async columnId => Column.findById( columnId ).exec() ) );
@@ -73,6 +86,20 @@ const deleteBoard = async ( id ) => {
     return board;
 };
 
+/**
+ * Delete boards when a project is deleted.
+ *
+ * @param {Object} message the message from the project-mangement
+ * service.
+ */
+new MessageConsumer( "db.project-management.delete-project", async ( message ) => {
+    const { boards } = message;
+
+    for ( const board of boards ) {
+        await deleteBoard( board, false );
+    }
+} );
+
 module.exports = {
     getBoards,
     getBoardById,
@@ -80,3 +107,4 @@ module.exports = {
     updateBoard,
     deleteBoard,
 };
+/* eslint-enable no-new, no-restricted-syntax, no-await-in-loop */

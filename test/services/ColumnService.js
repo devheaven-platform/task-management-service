@@ -1,4 +1,5 @@
 const { expect, should } = require( "chai" );
+require( "dotenv" ).config();
 
 const ColumnService = require( "../../src/services/ColumnService" );
 const BoardService = require( "../../src/services/BoardService" );
