@@ -71,6 +71,16 @@ router.get( "/for/:projectId", asyncMiddleware( controller.getBoardsForProject )
  *            type: string
  *          required: true
  *          description: Id of the board to retrieve
+ *        - in: query
+ *          name: start
+ *          schema:
+ *            type: date
+ *          description: Date the finished tasks should be after.
+ *        - in: query
+ *          name: end
+ *          schema:
+ *            type: date
+ *          description: Date the finished tasks should be before.
  *      responses:
  *          '200':
  *            description: OK

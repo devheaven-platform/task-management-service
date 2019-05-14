@@ -6,8 +6,6 @@ const Column = require( "../models/Column" );
 const Board = require( "../models/Board" );
 const Task = require( "../models/Task" );
 
-const ProjectURI = process.env.PROJECT_MANAGEMENT_URI;
-
 const producer = new MessageProducer();
 
 /**
@@ -57,7 +55,8 @@ const createBoard = async ( newBoard ) => {
  * @param {Date} end the max date the tasks can have
  */
 const getFinishedBoardTasks = async ( projectId, start, end ) => {
-    const { data } = await axios.get( `${ ProjectURI }projects/${ projectId }` );
+    const uri = process.env.PROJECT_MANAGEMENT_URI;
+    const { data } = await axios.get( `${ uri }projects/${ projectId }` );
 
     const query = {
         $gte: start ? new Date( start * 1000 ) : undefined,
