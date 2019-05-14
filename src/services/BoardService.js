@@ -7,7 +7,6 @@ const Board = require( "../models/Board" );
 const Task = require( "../models/Task" );
 
 const ProjectURI = process.env.PROJECT_MANAGEMENT_URI;
-
 const producer = new MessageProducer();
 
 /**
