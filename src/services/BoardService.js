@@ -49,43 +49,13 @@ const createBoard = async ( newBoard ) => {
     return board;
 };
 
-// const getFinishedBoardTasksWithDates = async ( projectId, start, end ) => {
-//     const result = [];
-//     await axios.get( `${ ProjectURI }projects/${ projectId }` ).then( async ( res ) => {
-//         const { data } = res;
-//         await data.boards.map( async ( boardId ) => {
-//             const board = await Board.findById( boardId ).populate( {
-//                 path: "columns",
-//                 select: "id",
-//                 match: { type: "DONE" },
-//                 populate: {
-//                     path: "tasks",
-//                     match: { updatedAt: { $gt: start, $lt: end } },
-//                 },
-//             } ).exec();
-//             result.push( board );
-//             return result;
-//         } );
-//     } );
-//     return result;
-// };
-
-// const getFinishedBoardTasksWithEnd = async ( projectId, end ) => {
-//     const { data } = await axios.get( `${ ProjectURI }projects/${ projectId }` );
-
-//     const promises = data.boards.map( async boardId => Board.findById( boardId ).populate( {
-//         path: "columns",
-//         match: { type: "DONE" },
-//         populate: {
-//             path: "tasks",
-//             match: { updatedAt: { $lte: new Date( end * 1000 ) } },
-//         },
-//     } ).exec() );
-
-//     const results = await Promise.all( promises );
-//     return results;
-// };
-
+/**
+ * Returns all the boards for a project with their finished tasks.
+ *
+ * @param {String} projectId the id of the project
+ * @param {Date} start the min date the tasks can have
+ * @param {Date} end the max date the tasks can have
+ */
 const getFinishedBoardTasks = async ( projectId, start, end ) => {
     const { data } = await axios.get( `${ ProjectURI }projects/${ projectId }` );
 
