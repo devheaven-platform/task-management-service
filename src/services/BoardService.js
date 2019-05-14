@@ -1,8 +1,12 @@
 /* eslint-disable no-new, no-restricted-syntax, no-await-in-loop */
+const axios = require( "axios" );
+const { pickBy } = require( "lodash" );
 const { MessageConsumer, MessageProducer } = require( "../config/messaging/Kafka" );
 const Column = require( "../models/Column" );
 const Board = require( "../models/Board" );
 const Task = require( "../models/Task" );
+
+const ProjectURI = process.env.PROJECT_MANAGEMENT_URI;
 
 const producer = new MessageProducer();
 
@@ -43,6 +47,64 @@ const createBoard = async ( newBoard ) => {
     } );
 
     return board;
+};
+
+// const getFinishedBoardTasksWithDates = async ( projectId, start, end ) => {
+//     const result = [];
+//     await axios.get( `${ ProjectURI }projects/${ projectId }` ).then( async ( res ) => {
+//         const { data } = res;
+//         await data.boards.map( async ( boardId ) => {
+//             const board = await Board.findById( boardId ).populate( {
+//                 path: "columns",
+//                 select: "id",
+//                 match: { type: "DONE" },
+//                 populate: {
+//                     path: "tasks",
+//                     match: { updatedAt: { $gt: start, $lt: end } },
+//                 },
+//             } ).exec();
+//             result.push( board );
+//             return result;
+//         } );
+//     } );
+//     return result;
+// };
+
+// const getFinishedBoardTasksWithEnd = async ( projectId, end ) => {
+//     const { data } = await axios.get( `${ ProjectURI }projects/${ projectId }` );
+
+//     const promises = data.boards.map( async boardId => Board.findById( boardId ).populate( {
+//         path: "columns",
+//         match: { type: "DONE" },
+//         populate: {
+//             path: "tasks",
+//             match: { updatedAt: { $lte: new Date( end * 1000 ) } },
+//         },
+//     } ).exec() );
+
+//     const results = await Promise.all( promises );
+//     return results;
+// };
+
+const getFinishedBoardTasks = async ( projectId, start, end ) => {
+    const { data } = await axios.get( `${ ProjectURI }projects/${ projectId }` );
+
+    const query = {
+        $gte: start ? new Date( start * 1000 ) : undefined,
+        $lte: end ? new Date( end * 1000 ) : undefined,
+    };
+
+    const promises = data.boards.map( async boardId => Board.findById( boardId ).populate( {
+        path: "columns",
+        match: { type: "DONE" },
+        populate: {
+            path: "tasks",
+            match: { updatedAt: pickBy( query, v => v !== undefined ) },
+        },
+    } ).exec() );
+
+    const results = await Promise.all( promises );
+    return results;
 };
 
 /**
@@ -108,6 +170,7 @@ new MessageConsumer( "db.project-management.delete-project", async ( message ) =
 module.exports = {
     getBoards,
     getBoardById,
+    getFinishedBoardTasks,
     createBoard,
     updateBoard,
     deleteBoard,

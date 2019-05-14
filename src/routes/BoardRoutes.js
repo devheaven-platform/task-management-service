@@ -36,6 +36,29 @@ const router = express.Router();
 router.get( "/", asyncMiddleware( controller.getBoards ) );
 
 /**
+ * /boards/for/:
+ *    get:
+ *      operationId: GetBoardsForProject
+ *      summary: Returns a list of all the finished tasks in a board
+ *      responses:
+ *          '200':
+ *            description: OK
+ *            content:
+ *              application/json:
+ *                schema:
+ *                  type: array
+ *                  items:
+ *                    $ref: '#/components/schemas/Board'
+ *          '401':
+ *            $ref: '#/components/responses/Unauthorized'
+ *          '500':
+ *            $ref: '#/components/responses/InternalServerError'
+ *      tags:
+ *        - Boards
+ */
+router.get( "/for/:projectId", asyncMiddleware( controller.getBoardsForProject ) );
+
+/**
  * @swagger
  * /boards/{id}:
  *    get:
@@ -93,7 +116,7 @@ router.get( "/:id", asyncMiddleware( controller.getBoardById ) );
  *                - name
  *                - project
  *      responses:
- *          '204':
+ *          '201':
  *            description: Created
  *            content:
  *              application/json:
