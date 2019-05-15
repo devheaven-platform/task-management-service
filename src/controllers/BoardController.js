@@ -13,15 +13,6 @@ const getBoards = async ( req, res ) => {
     return res.json( boards );
 };
 
-const getBoardsForProject = async ( req, res ) => {
-    if ( !validate.id( req.params.projectId ) ) {
-        return res.status( 400 ).json( new ApiError( "Id is invalid" ) );
-    }
-
-    const result = await BoardService.getFinishedBoardTasks( req.params.projectId, req.query.start, req.query.end );
-    return res.json( result );
-};
-
 /**
  * Gets one board by its id
  *
@@ -108,7 +99,6 @@ const deleteBoard = async ( req, res ) => {
 module.exports = {
     getBoards,
     getBoardById,
-    getBoardsForProject,
     createBoard,
     updateBoard,
     deleteBoard,

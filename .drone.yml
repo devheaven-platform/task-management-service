@@ -1,25 +1,19 @@
 pipeline:
-  # test:
-  #   image: node
-  #   environment:
-  #     NODE_PATH: src
-  #   commands:
-  #     - npm install --quiet
-  #     - npm run test
-  #   when:
-  #     branch: master
-  #     event: pull_request
+  test:
+    image: node
+    environment:
+      NODE_PATH: src
+    commands:
+      - npm install --quiet
+      - npm run test
+    when:
+      branch: master
+      event: pull_request
 
   code-analysis:
     image: aosapps/drone-sonar-plugin
     sonar_host: https://sonar.devheaven.nl
     sonar_token: a7c4bfe4d43a28697f4c0ac4d9a0deed57d167df
-    # secrets: [ sonar_host, sonar_token]
-    # secrets:
-    #   - source: sonar_host
-    #     target: sonar_host
-    #   - source: sonar_token
-    #     target: sonar_token
     when:
       branch: master
       event: pull_request

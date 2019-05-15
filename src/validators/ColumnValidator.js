@@ -48,16 +48,6 @@ const update = ( body ) => {
         }
     }
 
-    if ( body.status !== undefined ) {
-        if ( !GenericValidator.isString( body.name ) ) {
-            errors.status = "Status must be of type string";
-        } else if ( body.status.trim() === "" ) {
-            errors.status = "Status cannot be an empty string";
-        } else if ( body.status !== "DONE" && body.status !== "CUSTOM" && body.status !== "TODO" ) {
-            errors.status = "Status must be 'DONE', 'CUSTOM', or 'TODO'";
-        }
-    }
-
     return errors;
 };
 

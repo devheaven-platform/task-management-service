@@ -1,6 +1,4 @@
 /* eslint-disable no-new, no-restricted-syntax, no-await-in-loop */
-const axios = require( "axios" );
-const { pickBy } = require( "lodash" );
 const { MessageConsumer, MessageProducer } = require( "../config/messaging/Kafka" );
 const Column = require( "../models/Column" );
 const Board = require( "../models/Board" );
@@ -45,35 +43,6 @@ const createBoard = async ( newBoard ) => {
     } );
 
     return board;
-};
-
-/**
- * Returns all the boards for a project with their finished tasks.
- *
- * @param {String} projectId the id of the project
- * @param {Date} start the min date the tasks can have
- * @param {Date} end the max date the tasks can have
- */
-const getFinishedBoardTasks = async ( projectId, start, end ) => {
-    const uri = process.env.PROJECT_MANAGEMENT_URI;
-    const { data } = await axios.get( `${ uri }projects/${ projectId }` );
-
-    const query = {
-        $gte: start ? new Date( start * 1000 ) : undefined,
-        $lte: end ? new Date( end * 1000 ) : undefined,
-    };
-
-    const promises = data.boards.map( async boardId => Board.findById( boardId ).populate( {
-        path: "columns",
-        match: { type: "DONE" },
-        populate: {
-            path: "tasks",
-            match: { updatedAt: pickBy( query, v => v !== undefined ) },
-        },
-    } ).exec() );
-
-    const results = await Promise.all( promises );
-    return results;
 };
 
 /**
@@ -139,7 +108,6 @@ new MessageConsumer( "db.project-management.delete-project", async ( message ) =
 module.exports = {
     getBoards,
     getBoardById,
-    getFinishedBoardTasks,
     createBoard,
     updateBoard,
     deleteBoard,
