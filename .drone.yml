@@ -12,7 +12,7 @@ pipeline:
 
   sonarqube:
     image: aosapps/drone-sonar-plugin
-    secrets: [ sonar_token, sonar_host ]
+    secrets: [ plugin_sonar_host, plugin_sonar_token ]
     when:
       branch: master
       event: pull_request
