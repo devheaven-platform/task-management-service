@@ -12,9 +12,9 @@ pipeline:
 
   code-analysis:
     image: aosapps/drone-sonar-plugin
-    sonar_host: https://sonar.devheaven.nl
-    sonar_token: d9673533f31e23f7fd98c179cf9a0645ae54c2a2
-    # secrets: [ sonar_host, sonar_token]
+#     sonar_host: https://sonar.devheaven.nl
+#     sonar_token: a7c4bfe4d43a28697f4c0ac4d9a0deed57d167df
+    secrets: [ sonar_host, sonar_token]
     # secrets:
     #   - source: sonar_host
     #     target: sonar_host
