@@ -12,7 +12,9 @@ pipeline:
 
   code-analysis:
     image: devheavenci/drone-sonar-plugin
-    secrets: [ sonar_host, sonar_token]
+    sonar_host: http://localhost:9000
+    sonar_token: 32167381299312
+    # secrets: [ sonar_host, plugin_sonar_token]
     when:
       branch: master
       event: pull_request
