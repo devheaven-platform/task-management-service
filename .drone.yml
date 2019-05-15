@@ -12,7 +12,7 @@ pipeline:
 
   code-analysis:
     image: aosapps/drone-sonar-plugin
-    secrets: [ SONAR_HOST, SONAR_TOKEN]
+    secrets: [ PLUGIN_SONAR_HOST, PLUGIN_SONAR_TOKEN]
     when:
       branch: master
       event: pull_request
