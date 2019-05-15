@@ -10,6 +10,13 @@ pipeline:
       branch: master
       event: pull_request
 
+  sonarqube:
+    image: aosapps/drone-sonar-plugin
+    secrets: [ sonar_host, sonar_token ]
+    when:
+      branch: master
+      event: pull_request
+
   publish-staging:
     image: plugins/docker
     repo: devheavenci/task-management-service
