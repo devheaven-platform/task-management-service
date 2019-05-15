@@ -15,7 +15,12 @@ pipeline:
     # sonar_host: sonar_host
     # sonar_token: sonar_token
     # secrets: [ sonar_host, sonar_token]
-    secrets: [ docker_username, docker_password ]
+    # secrets: [ docker_username, docker_password ]
+    secrets:
+      - source: sonar_host
+        target: sonar_host
+      - source: sonar_token
+        target: sonar_token
     when:
       branch: master
       event: pull_request
