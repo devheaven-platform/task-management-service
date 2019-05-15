@@ -11,16 +11,16 @@ pipeline:
   #     event: pull_request
 
   code-analysis:
-    image: devheavenci/drone-sonar-plugin
-    # sonar_host: sonar_host
-    # sonar_token: sonar_token
-    # secrets: [ sonar_host, sonar_token]
+    image: aosapps/drone-sonar-plugin
+    sonar_host: "${SONAR_HOST}"
+    sonar_token: "${SONAR_TOKEN}"
+    secrets: [ sonar_host, sonar_token]
     # secrets: [ docker_username, docker_password ]
-    secrets:
-      - source: sonar_host
-        target: sonar_host
-      - source: sonar_token
-        target: sonar_token
+    # secrets:
+    #   - source: sonar_host
+    #     target: sonar_host
+    #   - source: sonar_token
+    #     target: sonar_token
     when:
       branch: master
       event: pull_request
