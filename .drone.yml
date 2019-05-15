@@ -1,14 +1,14 @@
 pipeline:
-  test:
-    image: node
-    environment:
-      NODE_PATH: src
-    commands:
-      - npm install --quiet
-      - npm run test
-    when:
-      branch: master
-      event: pull_request
+  # test:
+  #   image: node
+  #   environment:
+  #     NODE_PATH: src
+  #   commands:
+  #     - npm install --quiet
+  #     - npm run test
+  #   when:
+  #     branch: master
+  #     event: pull_request
 
   code-analysis:
     image: aosapps/drone-sonar-plugin
