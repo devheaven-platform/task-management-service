@@ -10,9 +10,9 @@ pipeline:
       branch: master
       event: pull_request
 
-  sonarqube:
-    image: aosapps/drone-sonar-plugin:0.8
-    secrets: [ sonar_host, sonar_token ]
+  code-analysis:
+    image: aosapps/drone-sonar-plugin
+    secrets: [sonar_host, sonar_token]
     when:
       branch: master
       event: pull_request
