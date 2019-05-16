@@ -1,4 +1,5 @@
 const BoardService = require( "../services/BoardService" );
+const ColumnService = require( "../services/ColumnService" );
 const validate = require( "../validators/BoardValidator" );
 const ApiError = require( "../models/Error" );
 
@@ -47,6 +48,14 @@ const createBoard = async ( req, res ) => {
     }
 
     const board = await BoardService.createBoard( req.body );
+
+    const doneColumn = {
+        name: 'Done',
+        isDoneColumn: true,
+        board: board.id
+    }
+    
+    const createDoneColumn = await ColumnService.createColumn(doneColumn)
 
     return res.status( 201 ).json( board );
 };
