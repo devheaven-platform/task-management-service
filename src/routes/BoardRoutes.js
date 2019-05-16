@@ -36,6 +36,7 @@ const router = express.Router();
 router.get( "/", asyncMiddleware( controller.getBoards ) );
 
 /**
+ * @swagger
  * /boards/for/:
  *    get:
  *      operationId: GetBoardsForProject
