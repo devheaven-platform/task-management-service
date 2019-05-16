@@ -53,6 +53,11 @@ const Column = new mongoose.Schema( {
         type: String,
         ref: "Task",
     } ],
+    columnType: {
+        type: String,
+        enum: [ "DONE", "TODO", "CUSTOM" ],
+        default: "CUSTOM",
+    },
 }, { timestamps: true } );
 
 Column.set( "toJSON", {
