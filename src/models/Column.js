@@ -45,8 +45,8 @@ const Column = new mongoose.Schema( {
         type: String,
         required: true,
     },
-    isDoneColumn: {
-        type: Boolean,
+    columnType: {
+        type: String,
         required: false,
     },
     tasks: [ {
