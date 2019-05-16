@@ -13,7 +13,7 @@ pipeline:
   code-analysis:
     image: aosapps/drone-sonar-plugin
     sonar_host: https://sonar.devheaven.nl
-    sonar_token: a7c4bfe4d43a28697f4c0ac4d9a0deed57d167df
+    sonar_token: ae81df1bded95618eab67fb41693825b0e14d2db
     when:
       branch: master
       event: pull_request
