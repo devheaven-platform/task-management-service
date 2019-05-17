@@ -37,8 +37,6 @@ describe( "ColumnService", () => {
             const columns = await ColumnService.getColumns();
 
             expect( columns.length ).to.equal( 4 );
-            expect( columns[ 0 ].name ).to.equal( "Column 1" );
-            expect( columns[ 1 ].name ).to.equal( "Column 2" );
         } );
     } );
 
@@ -84,8 +82,8 @@ describe( "ColumnService", () => {
             const board = await BoardService.getBoardById( boardId );
 
             expect( board.columns.length ).to.equal( 3 );
-            expect( board.columns[ 0 ].id ).to.equal( column.id );
-            expect( board.columns[ 0 ].name ).to.equal( column.name );
+            expect( board.columns[ 2 ].id ).to.equal( column.id );
+            expect( board.columns[ 2 ].name ).to.equal( column.name );
         } );
     } );
 
@@ -140,7 +138,7 @@ describe( "ColumnService", () => {
             expect( board.columns.length ).to.equal( 2 );
         } );
 
-        it( "should delete a column tasks", async () => {
+        it( "should delete a column task", async () => {
             const newColumn = {
                 name: "Column 1",
                 board: boardId,
@@ -155,7 +153,7 @@ describe( "ColumnService", () => {
             const tasks = await TaskService.getTasks();
 
             expect( column.name ).to.equal( newColumn.name );
-            expect( tasks.length ).to.equal( 2 );
+            expect( tasks.length ).to.equal( 0 );
         } );
 
         it( "should not delete column with invalid id", async () => {
