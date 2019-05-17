@@ -47,6 +47,7 @@ const uuid = require( "uuid" );
  *         - updatedAt
  */
 const Board = new mongoose.Schema( {
+    
     _id: {
         type: String,
         default: uuid.v4,
