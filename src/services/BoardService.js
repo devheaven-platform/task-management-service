@@ -1,11 +1,11 @@
 /* eslint-disable no-new, no-restricted-syntax, no-await-in-loop */
-const ColumnService = require( "../services/ColumnService" );
-const axios = require( "axios" );
-const { pickBy } = require( "lodash" );
-const { MessageConsumer, MessageProducer } = require( "../config/messaging/Kafka" );
-const Column = require( "../models/Column" );
-const Board = require( "../models/Board" );
-const Task = require( "../models/Task" );
+const ColumnService = require("../services/ColumnService");
+const axios = require("axios");
+const { pickBy } = require("lodash");
+const { MessageConsumer, MessageProducer } = require("../config/messaging/Kafka");
+const Column = require("../models/Column");
+const Board = require("../models/Board");
+const Task = require("../models/Task");
 
 const producer = new MessageProducer();
 
@@ -21,12 +21,12 @@ const getBoards = async () => Board.find().exec();
  *
  * @returns the board or null
  */
-const getBoardById = async id => Board.findById( id ).populate( {
+const getBoardById = async id => Board.findById(id).populate({
     path: "columns",
     populate: {
         path: "tasks",
     },
-} ).exec();
+}).exec();
 
 /**
  * Creates a new board and calls the project
@@ -36,14 +36,14 @@ const getBoardById = async id => Board.findById( id ).populate( {
  * @param {Object} newBoard the board to add
  * @returns the new board or null if an error occurred
  */
-const createBoard = async ( newBoard ) => {
-    const board = await new Board( newBoard ).save();
+const createBoard = async (newBoard) => {
+    const board = await new Board(newBoard).save();
 
     // Add to project
-    await producer.send( "db.task-management.create-board", {
+    await producer.send("db.task-management.create-board", {
         board: board.id,
         project: newBoard.project,
-    } );
+    });
 
     const doneColumn = {
         name: 'Done',
@@ -52,13 +52,13 @@ const createBoard = async ( newBoard ) => {
     };
 
     const backLogColumn = {
-        name: 'Done',
+        name: 'Backlog',
         columnType: "TODO",
         board: board.id
     };
-    
+
     const createDoneColumn = await ColumnService.createColumn(doneColumn);
-    
+
     const createBacklogColumn = await ColumnService.createColumn(backLogColumn);
 
     return board;
@@ -71,25 +71,25 @@ const createBoard = async ( newBoard ) => {
  * @param {Date} start the min date the tasks can have
  * @param {Date} end the max date the tasks can have
  */
-const getFinishedBoardTasks = async ( projectId, start, end ) => {
+const getFinishedBoardTasks = async (projectId, start, end) => {
     const uri = process.env.PROJECT_MANAGEMENT_URI;
-    const { data } = await axios.get( `${ uri }projects/${ projectId }` );
+    const { data } = await axios.get(`${uri}projects/${projectId}`);
 
     const query = {
-        $gte: start ? new Date( start * 1000 ) : undefined,
-        $lte: end ? new Date( end * 1000 ) : undefined,
+        $gte: start ? new Date(start * 1000) : undefined,
+        $lte: end ? new Date(end * 1000) : undefined,
     };
 
-    const promises = data.boards.map( async boardId => Board.findById( boardId ).populate( {
+    const promises = data.boards.map(async boardId => Board.findById(boardId).populate({
         path: "columns",
         match: { type: "DONE" },
         populate: {
             path: "tasks",
-            match: { updatedAt: pickBy( query, v => v !== undefined ) },
+            match: { updatedAt: pickBy(query, v => v !== undefined) },
         },
-    } ).exec() );
+    }).exec());
 
-    const results = await Promise.all( promises );
+    const results = await Promise.all(promises);
     return results;
 };
 
@@ -100,12 +100,12 @@ const getFinishedBoardTasks = async ( projectId, start, end ) => {
  * @param {Object} board the updated board values
  * @returns the updated board or null if an error occurred
  */
-const updateBoard = async ( id, board ) => Board.findOneAndUpdate( { _id: id }, board, { new: true } ).populate( {
+const updateBoard = async (id, board) => Board.findOneAndUpdate({ _id: id }, board, { new: true }).populate({
     path: "columns",
     populate: {
         path: "tasks",
     },
-} ).exec();
+}).exec();
 
 /**
  * Deletes a board from the database and calls the
@@ -115,26 +115,26 @@ const updateBoard = async ( id, board ) => Board.findOneAndUpdate( { _id: id }, 
  * @param {String} id the id of the board to delete
  * @returns the deleted board or null if an error occurred
  */
-const deleteBoard = async ( id, emit = true ) => {
-    const board = await Board.findByIdAndRemove( id ).exec();
-    if ( !board ) {
+const deleteBoard = async (id, emit = true) => {
+    const board = await Board.findByIdAndRemove(id).exec();
+    if (!board) {
         return null;
     }
 
     // Delete from project
-    if ( emit ) {
-        await producer.send( "db.task-management.delete-board", {
+    if (emit) {
+        await producer.send("db.task-management.delete-board", {
             board: board.id,
-        } );
+        });
     }
 
     // Delete tasks
-    const columns = await Promise.all( board.columns.map( async columnId => Column.findById( columnId ).exec() ) );
-    const tasks = columns.map( column => column.tasks );
-    await Task.deleteMany( { _id: { $in: [].concat( ...tasks ) } } ).exec();
+    const columns = await Promise.all(board.columns.map(async columnId => Column.findById(columnId).exec()));
+    const tasks = columns.map(column => column.tasks);
+    await Task.deleteMany({ _id: { $in: [].concat(...tasks) } }).exec();
 
     // Delete columns
-    await Column.deleteMany( { _id: { $in: board.columns } } ).exec();
+    await Column.deleteMany({ _id: { $in: board.columns } }).exec();
 
     return board;
 };
@@ -145,13 +145,13 @@ const deleteBoard = async ( id, emit = true ) => {
  * @param {Object} message the message from the project-mangement
  * service.
  */
-new MessageConsumer( "db.project-management.delete-project", async ( message ) => {
+new MessageConsumer("db.project-management.delete-project", async (message) => {
     const { boards } = message;
 
-    for ( const board of boards ) {
-        await deleteBoard( board, false );
+    for (const board of boards) {
+        await deleteBoard(board, false);
     }
-} );
+});
 
 module.exports = {
     getBoards,
