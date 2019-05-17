@@ -137,7 +137,7 @@ describe( "ColumnService", () => {
             const board = await BoardService.getBoardById( boardId );
 
             expect( column.name ).to.equal( newColumn.name );
-            expect( board.columns.length ).to.equal( 0 );
+            expect( board.columns.length ).to.equal( 2 );
         } );
 
         it( "should delete a column tasks", async () => {
