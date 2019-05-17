@@ -36,7 +36,7 @@ describe( "ColumnService", () => {
         it( "should return all columns", async () => {
             const columns = await ColumnService.getColumns();
 
-            expect( columns.length ).to.equal( 2 );
+            expect( columns.length ).to.equal( 4 );
             expect( columns[ 0 ].name ).to.equal( "Column 1" );
             expect( columns[ 1 ].name ).to.equal( "Column 2" );
         } );
@@ -83,7 +83,7 @@ describe( "ColumnService", () => {
 
             const board = await BoardService.getBoardById( boardId );
 
-            expect( board.columns.length ).to.equal( 1 );
+            expect( board.columns.length ).to.equal( 3 );
             expect( board.columns[ 0 ].id ).to.equal( column.id );
             expect( board.columns[ 0 ].name ).to.equal( column.name );
         } );
@@ -155,7 +155,7 @@ describe( "ColumnService", () => {
             const tasks = await TaskService.getTasks();
 
             expect( column.name ).to.equal( newColumn.name );
-            expect( tasks.length ).to.equal( 0 );
+            expect( tasks.length ).to.equal( 2 );
         } );
 
         it( "should not delete column with invalid id", async () => {
