@@ -1,4 +1,5 @@
 /* eslint-disable no-new, no-restricted-syntax, no-await-in-loop */
+const ColumnService = require( "../services/ColumnService" );
 const axios = require( "axios" );
 const { pickBy } = require( "lodash" );
 const { MessageConsumer, MessageProducer } = require( "../config/messaging/Kafka" );
@@ -43,6 +44,22 @@ const createBoard = async ( newBoard ) => {
         board: board.id,
         project: newBoard.project,
     } );
+
+    const doneColumn = {
+        name: 'Done',
+        columnType: "DONE",
+        board: board.id
+    };
+
+    const backLogColumn = {
+        name: 'Done',
+        columnType: "TODO",
+        board: board.id
+    };
+    
+    const createDoneColumn = await ColumnService.createColumn(doneColumn);
+    
+    const createBacklogColumn = await ColumnService.createColumn(backLogColumn);
 
     return board;
 };

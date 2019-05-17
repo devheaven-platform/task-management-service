@@ -45,6 +45,10 @@ const Column = new mongoose.Schema( {
         type: String,
         required: true,
     },
+    columnType: {
+        type: String,
+        required: false,
+    },
     tasks: [ {
         type: String,
         ref: "Task",
