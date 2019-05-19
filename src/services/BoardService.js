@@ -45,22 +45,22 @@ const createBoard = async ( newBoard ) => {
         project: newBoard.project,
     } );
 
-    const doneColumn = {
+    const newDoneColumn = {
         name: "Done",
         columnType: "DONE",
         board: board.id,
     };
 
-    const backLogColumn = {
+    const newBackLogColumn = {
         name: "Backlog",
         columnType: "TODO",
         board: board.id,
     };
 
-    const savedDoneColumn = await ColumnService.createColumn( doneColumn );
-    const savedBacklogColumn = await ColumnService.createColumn( backLogColumn );
+    const doneColumn = await ColumnService.createColumn( newDoneColumn );
+    const backlogColumn = await ColumnService.createColumn( newBackLogColumn );
 
-    board.columns.push( savedBacklogColumn, savedDoneColumn );
+    board.columns.push( backlogColumn, doneColumn );
 
     return board;
 };
