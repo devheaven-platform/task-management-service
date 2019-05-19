@@ -1,7 +1,38 @@
 /* eslint complexity: 0 */
 const validator = require( "validator" );
 
+const moment = require( "moment" );
+
 const GenericValidator = require( "./GenericValidator" );
+
+const get = ( params, query ) => {
+    const errors = {};
+
+    if ( params.projectId === undefined ) {
+        errors.projectId = "Id is invalid";
+    } else if ( !GenericValidator.id( params.projectId ) ) {
+        errors.name = "Id must be of type UUID";
+    }
+
+    if ( query.start !== undefined ) {
+        if ( !validator.isLength( query.start, { min: 1 } ) ) {
+            errors.start = "Start date cannot be an empty value";
+        } else if ( !moment.unix( query.start ).isValid() ) {
+            errors.start = "Start date must be an unix value";
+        }
+    }
+
+    if ( query.end !== undefined ) {
+        errors.end = "End date is invalid";
+        if ( !validator.isLength( query.end, { min: 1 } ) ) {
+            errors.end = "End date cannot be an empty value";
+        } else if ( !moment.unix( query.end ).isValid() ) {
+            errors.end = "End date is must be an unix value";
+        }
+    }
+
+    return errors;
+};
 
 /**
  * Validates the create board request
@@ -67,6 +98,7 @@ const update = ( body ) => {
 
 module.exports = {
     id: GenericValidator.id,
+    get,
     create,
     update,
 };
