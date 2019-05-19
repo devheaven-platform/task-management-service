@@ -7,7 +7,7 @@ const TaskService = require( "../../src/services/TaskService" );
 
 describe( "BoardService", () => {
     describe( "getBoards", () => {
-        before( async () => {
+        it( "should return all boards", async () => {
             const newBoard1 = {
                 name: "Board 1",
                 project: "8d50a412-3f38-458e-be0e-06f0e084afb7",
@@ -19,9 +19,7 @@ describe( "BoardService", () => {
 
             await BoardService.createBoard( newBoard1 );
             await BoardService.createBoard( newBoard2 );
-        } );
 
-        it( "should return all boards", async () => {
             const boards = await BoardService.getBoards();
 
             expect( boards.length ).to.equal( 2 );
