@@ -48,21 +48,18 @@ const createBoard = async ( newBoard ) => {
     const doneColumn = {
         name: "Done",
         columnType: "DONE",
+        board: board.id,
     };
 
     const backLogColumn = {
         name: "Backlog",
         columnType: "TODO",
+        board: board.id,
     };
 
-    const createDoneColumn = await ColumnService.createColumn( doneColumn );
-
-    const createBacklogColumn = await ColumnService.createColumn( backLogColumn );
-
-    await board.columns.push( createBacklogColumn, createDoneColumn );
-    const boardWithColumns = await board.save();
-
-    return boardWithColumns;
+    await ColumnService.createColumn( doneColumn );
+    await ColumnService.createColumn( backLogColumn );
+    return board;
 };
 
 /**
