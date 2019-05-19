@@ -20,8 +20,10 @@ const getBoards = async ( req, res ) => {
  * @param {HttpResponse} res the response object
  */
 const getBoardsForProject = async ( req, res ) => {
-    if ( !validate.id( req.params.projectId ) ) {
-        return res.status( 400 ).json( new ApiError( "Id is invalid" ) );
+    const errors = validate.get( req.params, req.query );
+
+    if ( Object.keys( errors ).length > 0 ) {
+        return res.status( 400 ).json( new ApiError( "One or more values are invalid", errors ) );
     }
 
     const result = await BoardService.getFinishedBoardTasks( req.params.projectId, req.query.start, req.query.end );
