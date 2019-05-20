@@ -1,13 +1,14 @@
 /* eslint-disable no-new, no-restricted-syntax, no-await-in-loop */
 const axios = require( "axios" );
 const { pickBy } = require( "lodash" );
+const moment = require( "moment" );
 const ColumnService = require( "../services/ColumnService" );
-const { MessageConsumer, MessageProducer } = require( "../config/messaging/Kafka" );
+// const { MessageConsumer, MessageProducer } = require( "../config/messaging/Kafka" );
 const Column = require( "../models/Column" );
 const Board = require( "../models/Board" );
 const Task = require( "../models/Task" );
 
-const producer = new MessageProducer();
+// const producer = new MessageProducer();
 
 /**
  * Gets all boards from the database
@@ -40,10 +41,10 @@ const createBoard = async ( newBoard ) => {
     const board = await new Board( newBoard ).save();
 
     // Add to project
-    await producer.send( "db.task-management.create-board", {
-        board: board.id,
-        project: newBoard.project,
-    } );
+    // await producer.send( "db.task-management.create-board", {
+    //     board: board.id,
+    //     project: newBoard.project,
+    // } );
 
     const newDoneColumn = {
         name: "Done",
@@ -77,8 +78,8 @@ const getFinishedBoardTasks = async ( projectId, start, end ) => {
     const { data } = await axios.get( `${ uri }/projects/${ projectId }` );
 
     const query = {
-        $gte: start ? new Date( start * 1000 ) : undefined,
-        $lte: end ? new Date( end * 1000 ) : undefined,
+        $gte: start !== undefined ? moment( start / 1000 ) : undefined,
+        $lte: end !== undefined ? moment( end / 1000 ) : undefined,
     };
 
     const promises = data.boards.map( async boardId => Board.findById( boardId ).populate( {
@@ -124,9 +125,9 @@ const deleteBoard = async ( id, emit = true ) => {
 
     // Delete from project
     if ( emit ) {
-        await producer.send( "db.task-management.delete-board", {
-            board: board.id,
-        } );
+        // await producer.send( "db.task-management.delete-board", {
+        //     board: board.id,
+        // } );
     }
 
     // Delete tasks
@@ -146,13 +147,13 @@ const deleteBoard = async ( id, emit = true ) => {
  * @param {Object} message the message from the project-mangement
  * service.
  */
-new MessageConsumer( "db.project-management.delete-project", async ( message ) => {
-    const { boards } = message;
+// new MessageConsumer( "db.project-management.delete-project", async ( message ) => {
+//     const { boards } = message;
 
-    for ( const board of boards ) {
-        await deleteBoard( board, false );
-    }
-} );
+//     for ( const board of boards ) {
+//         await deleteBoard( board, false );
+//     }
+// } );
 
 module.exports = {
     getBoards,
