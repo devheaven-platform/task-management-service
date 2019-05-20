@@ -1,5 +1,6 @@
 /* eslint complexity: 0 */
 const validator = require( "validator" );
+const moment = require( "moment" );
 
 const moment = require( "moment" );
 
