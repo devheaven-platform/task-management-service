@@ -37,10 +37,27 @@ router.get( "/", asyncMiddleware( controller.getBoards ) );
 
 /**
  * @swagger
- * /boards/for/:
+ * /boards/for/{projectId}:
  *    get:
  *      operationId: GetBoardsForProject
  *      summary: Returns a list of all the finished tasks in a board
+ *      parameters:
+ *        - in: path
+ *          name: projectId
+ *          description: Id of the project to retrieve the boards of
+ *          schema:
+ *            type: string
+ *            required: true
+ *        - in: query
+ *          name: start
+ *          description: Date the finished tasks should be after.
+ *          schema:
+ *            type: date
+ *        - in: query
+ *          name: end
+ *          description: Date the finished tasks should be before.
+ *          schema:
+ *            type: date
  *      responses:
  *          '200':
  *            description: OK
@@ -72,16 +89,6 @@ router.get( "/for/:projectId", asyncMiddleware( controller.getBoardsForProject )
  *            type: string
  *          required: true
  *          description: Id of the board to retrieve
- *        - in: query
- *          name: start
- *          schema:
- *            type: date
- *          description: Date the finished tasks should be after.
- *        - in: query
- *          name: end
- *          schema:
- *            type: date
- *          description: Date the finished tasks should be before.
  *      responses:
  *          '200':
  *            description: OK
