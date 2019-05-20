@@ -22,7 +22,6 @@ const get = ( params, query ) => {
     }
 
     if ( query.end !== undefined ) {
-        errors.end = "End date is invalid";
         if ( !validator.isLength( query.end, { min: 1 } ) ) {
             errors.end = "End date cannot be an empty value";
         } else if ( !moment.unix( query.end / 1000 ).isValid() ) {
