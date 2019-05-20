@@ -2,8 +2,6 @@
 const validator = require( "validator" );
 const moment = require( "moment" );
 
-const moment = require( "moment" );
-
 const GenericValidator = require( "./GenericValidator" );
 
 const get = ( params, query ) => {
