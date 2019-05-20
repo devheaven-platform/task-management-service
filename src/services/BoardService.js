@@ -1,6 +1,7 @@
 /* eslint-disable no-new, no-restricted-syntax, no-await-in-loop */
 const axios = require( "axios" );
 const { pickBy } = require( "lodash" );
+const moment = require( "moment" );
 const ColumnService = require( "../services/ColumnService" );
 const { MessageConsumer, MessageProducer } = require( "../config/messaging/Kafka" );
 const Column = require( "../models/Column" );
@@ -77,8 +78,8 @@ const getFinishedBoardTasks = async ( projectId, start, end ) => {
     const { data } = await axios.get( `${ uri }/projects/${ projectId }` );
 
     const query = {
-        $gte: start ? new Date( start * 1000 ) : undefined,
-        $lte: end ? new Date( end * 1000 ) : undefined,
+        $gte: start !== undefined ? moment( start / 1000 ) : undefined,
+        $lte: end !== undefined ? moment( end / 1000 ) : undefined,
     };
 
     const promises = data.boards.map( async boardId => Board.findById( boardId ).populate( {
