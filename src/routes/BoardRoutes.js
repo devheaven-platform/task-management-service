@@ -43,7 +43,7 @@ router.get( "/", asyncMiddleware( controller.getBoards ) );
  *      summary: Returns a list of all the finished tasks in a board
  *      parameters:
  *        - in: path
- *          name: id
+ *          name: projectId
  *          schema:
  *            type: string
  *            required: true
