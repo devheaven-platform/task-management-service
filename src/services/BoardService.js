@@ -74,7 +74,7 @@ const createBoard = async ( newBoard ) => {
  */
 const getFinishedBoardTasks = async ( projectId, start, end ) => {
     const uri = process.env.PROJECT_MANAGEMENT_URI;
-    const { data } = await axios.get( `${ uri }projects/${ projectId }` );
+    const { data } = await axios.get( `${ uri }/projects/${ projectId }` );
 
     const query = {
         $gte: start ? new Date( start * 1000 ) : undefined,
