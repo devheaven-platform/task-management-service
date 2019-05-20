@@ -44,17 +44,18 @@ router.get( "/", asyncMiddleware( controller.getBoards ) );
  *      parameters:
  *        - in: path
  *          name: projectId
+ *          description: Id of the project to retrieve the boards of
  *          schema:
  *            type: string
  *            required: true
- *            description: Id of the project to retrieve the boards of
  *        - in: query
  *          name: start
+ *          description: Date the finished tasks should be after.
  *          schema:
  *            type: date
- *          description: Date the finished tasks should be after.
  *        - in: query
  *          name: end
+ *          description: Date the finished tasks should be before.
  *          schema:
  *            type: date
  *      responses:
