@@ -17,7 +17,7 @@ const get = ( params, query ) => {
     if ( query.start !== undefined ) {
         if ( !validator.isLength( query.start, { min: 1 } ) ) {
             errors.start = "Start date cannot be an empty value";
-        } else if ( !moment.unix( query.start ).isValid() ) {
+        } else if ( !moment.unix( query.start / 1000 ).isValid() ) {
             errors.start = "Start date must be an unix value";
         }
     }
@@ -26,7 +26,7 @@ const get = ( params, query ) => {
         errors.end = "End date is invalid";
         if ( !validator.isLength( query.end, { min: 1 } ) ) {
             errors.end = "End date cannot be an empty value";
-        } else if ( !moment.unix( query.end ).isValid() ) {
+        } else if ( !moment.unix( query.end / 1000 ).isValid() ) {
             errors.end = "End date is must be an unix value";
         }
     }
