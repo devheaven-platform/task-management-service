@@ -83,7 +83,7 @@ const getFinishedBoardTasks = async ( projectId, start, end ) => {
 
     const promises = data.boards.map( async boardId => Board.findById( boardId ).populate( {
         path: "columns",
-        match: { type: "DONE" },
+        match: { columnType: "DONE" },
         populate: {
             path: "tasks",
             match: { updatedAt: pickBy( query, v => v !== undefined ) },
