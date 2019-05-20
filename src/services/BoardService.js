@@ -78,8 +78,8 @@ const getFinishedBoardTasks = async ( projectId, start, end ) => {
     const { data } = await axios.get( `${ uri }/projects/${ projectId }` );
 
     const query = pickBy( {
-        $gte: start !== undefined ? moment( start / 1000 ) : undefined,
-        $lte: end !== undefined ? moment( end / 1000 ) : undefined,
+        $gte: start !== undefined ? moment.unix( start / 1000 ) : undefined,
+        $lte: end !== undefined ? moment.unix( end / 1000 ) : undefined,
     }, v => v !== undefined );
 
     const promises = data.boards.map( async boardId => Board.findById( boardId ).populate( {
@@ -87,7 +87,7 @@ const getFinishedBoardTasks = async ( projectId, start, end ) => {
         match: { columnType: "DONE" },
         populate: {
             path: "tasks",
-            match: { updatedAt: Object.keys( query ).length > 0 ? query : undefined },
+            match: pickBy( { updatedAt: Object.keys( query ).length > 0 ? query : undefined }, v => v !== undefined ),
         },
     } ).exec() );
 
