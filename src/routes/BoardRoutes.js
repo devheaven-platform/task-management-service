@@ -37,7 +37,7 @@ router.get( "/", asyncMiddleware( controller.getBoards ) );
 
 /**
  * @swagger
- * /boards/for/:
+ * /boards/for/{projectId}:
  *    get:
  *      operationId: GetBoardsForProject
  *      summary: Returns a list of all the finished tasks in a board
