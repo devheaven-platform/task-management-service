@@ -37,6 +37,47 @@ router.get( "/", asyncMiddleware( controller.getBoards ) );
 
 /**
  * @swagger
+ * /boards/for/{projectId}:
+ *    get:
+ *      operationId: GetBoardsForProject
+ *      summary: Returns a list of all the finished tasks in a board
+ *      parameters:
+ *        - in: path
+ *          name: projectId
+ *          description: Id of the project to retrieve the boards of
+ *          schema:
+ *            type: string
+ *            required: true
+ *        - in: query
+ *          name: start
+ *          description: Date the finished tasks should be after.
+ *          schema:
+ *            type: date
+ *        - in: query
+ *          name: end
+ *          description: Date the finished tasks should be before.
+ *          schema:
+ *            type: date
+ *      responses:
+ *          '200':
+ *            description: OK
+ *            content:
+ *              application/json:
+ *                schema:
+ *                  type: array
+ *                  items:
+ *                    $ref: '#/components/schemas/Board'
+ *          '401':
+ *            $ref: '#/components/responses/Unauthorized'
+ *          '500':
+ *            $ref: '#/components/responses/InternalServerError'
+ *      tags:
+ *        - Boards
+ */
+router.get( "/for/:projectId", asyncMiddleware( controller.getBoardsForProject ) );
+
+/**
+ * @swagger
  * /boards/{id}:
  *    get:
  *      operationId: GetBoardById
@@ -93,7 +134,7 @@ router.get( "/:id", asyncMiddleware( controller.getBoardById ) );
  *                - name
  *                - project
  *      responses:
- *          '204':
+ *          '201':
  *            description: Created
  *            content:
  *              application/json:

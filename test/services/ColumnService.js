@@ -36,9 +36,7 @@ describe( "ColumnService", () => {
         it( "should return all columns", async () => {
             const columns = await ColumnService.getColumns();
 
-            expect( columns.length ).to.equal( 2 );
-            expect( columns[ 0 ].name ).to.equal( "Column 1" );
-            expect( columns[ 1 ].name ).to.equal( "Column 2" );
+            expect( columns.length ).to.equal( 4 );
         } );
     } );
 
@@ -83,9 +81,9 @@ describe( "ColumnService", () => {
 
             const board = await BoardService.getBoardById( boardId );
 
-            expect( board.columns.length ).to.equal( 1 );
-            expect( board.columns[ 0 ].id ).to.equal( column.id );
-            expect( board.columns[ 0 ].name ).to.equal( column.name );
+            expect( board.columns.length ).to.equal( 3 );
+            expect( board.columns[ 2 ].id ).to.equal( column.id );
+            expect( board.columns[ 2 ].name ).to.equal( column.name );
         } );
     } );
 
@@ -137,10 +135,10 @@ describe( "ColumnService", () => {
             const board = await BoardService.getBoardById( boardId );
 
             expect( column.name ).to.equal( newColumn.name );
-            expect( board.columns.length ).to.equal( 0 );
+            expect( board.columns.length ).to.equal( 2 );
         } );
 
-        it( "should delete a column tasks", async () => {
+        it( "should delete a column task", async () => {
             const newColumn = {
                 name: "Column 1",
                 board: boardId,
