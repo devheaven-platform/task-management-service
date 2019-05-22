@@ -16,6 +16,7 @@ pipeline:
     # sonar_token: ae81df1bded95618eab67fb41693825b0e14d2db
     image: ypcloud/sonar-runner
     sources: "./source"
+    host: "https://sonar.devheaven.nl"
     secrets: [ sonar_host, sonar_login, sonar_password ]
     when:
       branch: master
