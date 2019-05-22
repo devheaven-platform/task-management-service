@@ -49,7 +49,7 @@ const update = ( body ) => {
     }
 
     if ( body.status !== undefined ) {
-        if ( !GenericValidator.isString( body.name ) ) {
+        if ( !GenericValidator.isString( body.status ) ) {
             errors.status = "Status must be of type string";
         } else if ( body.status.trim() === "" ) {
             errors.status = "Status cannot be an empty string";
