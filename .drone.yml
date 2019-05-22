@@ -17,7 +17,7 @@ pipeline:
     image: ypcloud/sonar-runner
     sources: "./source"
     host: "https://sonar.devheaven.nl"
-    secrets: [ sonar_host, sonar_login, sonar_password ]
+    secrets: [ sonar_login, sonar_password ]
     when:
       branch: master
       event: pull_request
