@@ -43,7 +43,7 @@ const create = ( body ) => {
 
     if ( body.name === undefined ) {
         errors.name = "Name is required";
-    } if ( !GenericValidator.isString( body.name ) ) {
+    } else if ( !GenericValidator.isString( body.name ) ) {
         errors.name = "Name must be of type string";
     } else if ( body.name.trim() === "" ) {
         errors.name = "Name cannot be a empty string";

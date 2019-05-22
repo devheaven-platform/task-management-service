@@ -14,7 +14,7 @@ const create = ( body ) => {
 
     if ( body.name === undefined ) {
         errors.name = "Name is required";
-    } if ( !GenericValidator.isString( body.name ) ) {
+    } else if ( !GenericValidator.isString( body.name ) ) {
         errors.name = "Name must be of type string";
     } else if ( body.name.trim() === "" ) {
         errors.name = "Name cannot be a empty string";
@@ -49,7 +49,7 @@ const update = ( body ) => {
     }
 
     if ( body.status !== undefined ) {
-        if ( !GenericValidator.isString( body.name ) ) {
+        if ( !GenericValidator.isString( body.status ) ) {
             errors.status = "Status must be of type string";
         } else if ( body.status.trim() === "" ) {
             errors.status = "Status cannot be an empty string";
