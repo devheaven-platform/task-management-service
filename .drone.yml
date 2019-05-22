@@ -10,12 +10,6 @@ pipeline:
       branch: master
       event: pull_request
 
-  debug:
-    image: node
-    commands:
-      - ls ./test
-      - ls ./test/coverage
-
   code-analysis:
     image: ypcloud/sonar-runner
     host: "https://sonar.devheaven.nl"
