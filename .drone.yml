@@ -15,7 +15,7 @@ pipeline:
     sources: "./src"
     host: "https://sonar.devheaven.nl"
     profile: "Sonar way"
-    lcovpath: "./coverage/lcov.info"
+    lcovpath: "./test/coverage/lcov.info"
     secrets: [ sonar_login, sonar_password ]
     when:
       branch: master
