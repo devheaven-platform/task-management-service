@@ -1,4 +1,1 @@
 --file ./test/setup.js
---reporter mocha-sonarqube-reporter 
---reporter-options output=test/coverage.xml 
---recursive 
