@@ -13,9 +13,10 @@ pipeline:
   code-analysis:
     image: ypcloud/sonar-runner
     host: "https://sonar.devheaven.nl"
-    sources: "./src"
+    sources: "src,test"
+    exclusions: "test"
     profile: "Sonar way"
-    lcovpath: "./test/coverage/lcov.info"
+    lcovpath: "test/coverage/lcov.info"
     secrets: [ sonar_login, sonar_password ]
     when:
       branch: master
