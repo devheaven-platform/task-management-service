@@ -5,7 +5,7 @@ pipeline:
       NODE_PATH: src
     commands:
       - npm install --quiet
-      - npm run test
+      - npm test
     when:
       branch: master
       event: pull_request
