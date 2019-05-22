@@ -1,4 +1,8 @@
 /* eslint-disable no-new, no-restricted-syntax, no-await-in-loop */
+const axios = require( "axios" );
+const { pickBy } = require( "lodash" );
+const moment = require( "moment" );
+const ColumnService = require( "../services/ColumnService" );
 const { MessageConsumer, MessageProducer } = require( "../config/messaging/Kafka" );
 const Column = require( "../models/Column" );
 const Board = require( "../models/Board" );
@@ -42,7 +46,53 @@ const createBoard = async ( newBoard ) => {
         project: newBoard.project,
     } );
 
+    const newDoneColumn = {
+        name: "Done",
+        columnType: "DONE",
+        board: board.id,
+    };
+
+    const newBackLogColumn = {
+        name: "Backlog",
+        columnType: "TODO",
+        board: board.id,
+    };
+
+    const doneColumn = await ColumnService.createColumn( newDoneColumn );
+    const backlogColumn = await ColumnService.createColumn( newBackLogColumn );
+
+    board.columns.push( backlogColumn, doneColumn );
+
     return board;
+};
+
+/**
+ * Returns all the boards for a project with their finished tasks.
+ *
+ * @param {String} projectId the id of the project
+ * @param {Date} start the min date the tasks can have
+ * @param {Date} end the max date the tasks can have
+ */
+const getFinishedBoardTasks = async ( projectId, start, end ) => {
+    const uri = process.env.PROJECT_MANAGEMENT_URI;
+    const { data } = await axios.get( `${ uri }/projects/${ projectId }` );
+
+    const query = pickBy( {
+        $gte: start !== undefined ? moment.unix( start / 1000 ) : undefined,
+        $lte: end !== undefined ? moment.unix( end / 1000 ) : undefined,
+    }, v => v !== undefined );
+
+    const promises = data.boards.map( async boardId => Board.findById( boardId ).populate( {
+        path: "columns",
+        match: { columnType: "DONE" },
+        populate: {
+            path: "tasks",
+            match: pickBy( { updatedAt: Object.keys( query ).length > 0 ? query : undefined }, v => v !== undefined ),
+        },
+    } ).exec() );
+
+    const results = await Promise.all( promises );
+    return results;
 };
 
 /**
@@ -108,6 +158,7 @@ new MessageConsumer( "db.project-management.delete-project", async ( message ) =
 module.exports = {
     getBoards,
     getBoardById,
+    getFinishedBoardTasks,
     createBoard,
     updateBoard,
     deleteBoard,
