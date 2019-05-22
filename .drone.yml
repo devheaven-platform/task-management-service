@@ -5,17 +5,23 @@ pipeline:
       NODE_PATH: src
     commands:
       - npm install --quiet
-      - npm run test
+      - npm test
     when:
       branch: master
       event: pull_request
 
+  debug:
+    image: node
+    commands:
+      - ls ./test
+      - ls ./test/coverage
+
   code-analysis:
     image: ypcloud/sonar-runner
-    sources: "./src"
     host: "https://sonar.devheaven.nl"
+    sources: "./src"
     profile: "Sonar way"
-    lcovpath: "./coverage/lcov.info"
+    lcovpath: "./test/coverage/lcov.info"
     secrets: [ sonar_login, sonar_password ]
     when:
       branch: master
