@@ -14,8 +14,9 @@ pipeline:
     # image: aosapps/drone-sonar-plugin
     # sonar_host: https://sonar.devheaven.nl
     # sonar_token: ae81df1bded95618eab67fb41693825b0e14d2db
-    image: rucciva/drone-sonar-plugin
-    secrets: [ sonar_host, sonar_token ]
+    image: ypcloud/sonar-runner
+    sources: "./source"
+    secrets: [ sonar_login, sonar_password, sonar_host ]
     when:
       branch: master
       event: pull_request
