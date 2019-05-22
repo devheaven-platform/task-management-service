@@ -17,7 +17,7 @@ pipeline:
     image: ypcloud/sonar-runner
     sources: "./src"
     host: "https://sonar.devheaven.nl"
-    profile: "JavaScript"
+    profile: "Sonar way"
     secrets: [ sonar_login, sonar_password ]
     when:
       branch: master
