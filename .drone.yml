@@ -10,6 +10,12 @@ pipeline:
       branch: master
       event: pull_request
 
+  debug:
+    image: node
+    commands:
+      - ls ./test
+      - ls ./test/coverage
+
   code-analysis:
     image: ypcloud/sonar-runner
     host: "https://sonar.devheaven.nl"
@@ -17,9 +23,6 @@ pipeline:
     profile: "Sonar way"
     lcovpath: "./test/coverage/lcov.info"
     secrets: [ sonar_login, sonar_password ]
-    commands:
-      - ls ./test
-      - ls ./test/coverage
     when:
       branch: master
       event: pull_request
