@@ -58,10 +58,10 @@ const createBoard = async ( newBoard ) => {
         board: board.id,
     };
 
-    const doneColumn = await ColumnService.createColumn( newDoneColumn );
     const backlogColumn = await ColumnService.createColumn( newBackLogColumn );
+    const doneColumn = await ColumnService.createColumn( newDoneColumn );
 
-    board.columns.push( doneColumn, backlogColumn );
+    board.columns.push( backlogColumn, doneColumn );
 
     return board;
 };
