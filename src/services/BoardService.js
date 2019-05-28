@@ -61,7 +61,7 @@ const createBoard = async ( newBoard ) => {
     const doneColumn = await ColumnService.createColumn( newDoneColumn );
     const backlogColumn = await ColumnService.createColumn( newBackLogColumn );
 
-    board.columns.push( backlogColumn, doneColumn );
+    board.columns.push( doneColumn, backlogColumn );
 
     return board;
 };
