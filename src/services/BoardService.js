@@ -73,9 +73,9 @@ const createBoard = async ( newBoard ) => {
  * @param {Date} start the min date the tasks can have
  * @param {Date} end the max date the tasks can have
  */
-const getFinishedBoardTasks = async ( projectId, start, end ) => {
+const getFinishedBoardTasks = async ( projectId, start, end, token ) => {
     const uri = process.env.PROJECT_MANAGEMENT_URI;
-    const { data } = await axios.get( `${ uri }/projects/${ projectId }` );
+    const { data } = await axios.get( `${ uri }/projects/${ projectId }`, { headers: { Authorization: token } } );
 
     const query = pickBy( {
         $gte: start !== undefined ? moment.unix( start / 1000 ) : undefined,

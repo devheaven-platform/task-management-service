@@ -26,7 +26,7 @@ const getBoardsForProject = async ( req, res ) => {
         return res.status( 400 ).json( new ApiError( "One or more values are invalid", errors ) );
     }
 
-    const result = await BoardService.getFinishedBoardTasks( req.params.projectId, req.query.start, req.query.end );
+    const result = await BoardService.getFinishedBoardTasks( req.params.projectId, req.query.start, req.query.end, req.headers.authorization );
     return res.json( result );
 };
 
