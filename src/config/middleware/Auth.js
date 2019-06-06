@@ -5,8 +5,8 @@ const passport = require( "passport" );
  * an 401 error will be returned. If the user is authenticated the req object will
  * recieve an user parameter to use in other middleware functions.
  *
- * @param {Object} req the request object
- * @param {Object} res the response object
+ * @param {HttpRequest} req the request object
+ * @param {HttpResponse} res the response object
  * @param {Function} next the callback for to call the next middleware function
  */
 module.exports = ( req, res, next ) => {
