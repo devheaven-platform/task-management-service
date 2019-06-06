@@ -1,6 +1,7 @@
 const express = require( "express" );
 
 const asyncMiddleware = require( "../config/middleware/Async" );
+const authMiddleware = require( "../config/middleware/Auth" );
 const controller = require( "../controllers/TaskController" );
 
 /**
@@ -30,10 +31,12 @@ const router = express.Router();
  *            $ref: '#/components/responses/Unauthorized'
  *          '500':
  *            $ref: '#/components/responses/InternalServerError'
+ *      security:
+ *        - bearerAuth: []
  *      tags:
  *        - Tasks
  */
-router.get( "/", asyncMiddleware( controller.getTasks ) );
+router.get( "/", authMiddleware, asyncMiddleware( controller.getTasks ) );
 
 /**
  * @swagger
@@ -63,10 +66,12 @@ router.get( "/", asyncMiddleware( controller.getTasks ) );
  *            $ref: '#/components/responses/NotFound'
  *          '500':
  *            $ref: '#/components/responses/InternalServerError'
+ *      security:
+ *        - bearerAuth: []
  *      tags:
  *        - Tasks
  */
-router.get( "/:id", asyncMiddleware( controller.getTaskById ) );
+router.get( "/:id", authMiddleware, asyncMiddleware( controller.getTaskById ) );
 
 /**
  * @swagger
@@ -109,10 +114,12 @@ router.get( "/:id", asyncMiddleware( controller.getTaskById ) );
  *            $ref: '#/components/responses/Unauthorized'
  *          '500':
  *            $ref: '#/components/responses/InternalServerError'
+ *      security:
+ *        - bearerAuth: []
  *      tags:
  *        - Tasks
  */
-router.post( "/", asyncMiddleware( controller.createTask ) );
+router.post( "/", authMiddleware, asyncMiddleware( controller.createTask ) );
 
 /**
  * @swagger
@@ -166,10 +173,12 @@ router.post( "/", asyncMiddleware( controller.createTask ) );
  *            $ref: '#/components/responses/NotFound'
  *          '500':
  *            $ref: '#/components/responses/InternalServerError'
+ *      security:
+ *        - bearerAuth: []
  *      tags:
  *        - Tasks
  */
-router.patch( "/:id", asyncMiddleware( controller.updateTask ) );
+router.patch( "/:id", authMiddleware, asyncMiddleware( controller.updateTask ) );
 
 /**
  * @swagger
@@ -193,9 +202,11 @@ router.patch( "/:id", asyncMiddleware( controller.updateTask ) );
  *            $ref: '#/components/responses/NotFound'
  *          '500':
  *            $ref: '#/components/responses/InternalServerError'
+ *      security:
+ *        - bearerAuth: []
  *      tags:
  *        - Tasks
  */
-router.delete( "/:id", asyncMiddleware( controller.deleteTask ) );
+router.delete( "/:id", authMiddleware, asyncMiddleware( controller.deleteTask ) );
 
 module.exports = router;

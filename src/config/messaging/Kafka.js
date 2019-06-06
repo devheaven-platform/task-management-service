@@ -29,7 +29,7 @@ class MessageConsumer {
      * @param {Function} handler the handler function to call.
      */
     constructor( topic, handler ) {
-        if ( env !== "test" ) {
+        if ( env === "production" ) {
             this.topic = topic;
             this.handler = handler;
             this.consumer = kafka.consumer( { groupId } );
@@ -83,7 +83,7 @@ class MessageConsumer {
 
 class MessageProducer {
     constructor() {
-        if ( env !== "test" ) {
+        if ( env === "production" ) {
             this.producer = kafka.producer();
 
             this.connect();
