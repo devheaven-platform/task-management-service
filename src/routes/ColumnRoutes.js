@@ -1,6 +1,7 @@
 const express = require( "express" );
 
 const asyncMiddleware = require( "../config/middleware/Async" );
+const authMiddleware = require( "../config/middleware/Auth" );
 const controller = require( "../controllers/ColumnController" );
 
 /**
@@ -30,10 +31,12 @@ const router = express.Router();
  *            $ref: '#/components/responses/Unauthorized'
  *          '500':
  *            $ref: '#/components/responses/InternalServerError'
+ *      security:
+ *        - bearerAuth: []
  *      tags:
  *        - Columns
  */
-router.get( "/", asyncMiddleware( controller.getColumns ) );
+router.get( "/", authMiddleware, asyncMiddleware( controller.getColumns ) );
 
 /**
  * @swagger
@@ -63,10 +66,12 @@ router.get( "/", asyncMiddleware( controller.getColumns ) );
  *            $ref: '#/components/responses/NotFound'
  *          '500':
  *            $ref: '#/components/responses/InternalServerError'
+ *      security:
+ *        - bearerAuth: []
  *      tags:
  *        - Columns
  */
-router.get( "/:id", asyncMiddleware( controller.getColumnById ) );
+router.get( "/:id", authMiddleware, asyncMiddleware( controller.getColumnById ) );
 
 /**
  * @swagger
@@ -105,10 +110,12 @@ router.get( "/:id", asyncMiddleware( controller.getColumnById ) );
  *            $ref: '#/components/responses/Unauthorized'
  *          '500':
  *            $ref: '#/components/responses/InternalServerError'
+ *      security:
+ *        - bearerAuth: []
  *      tags:
  *        - Columns
  */
-router.post( "/", asyncMiddleware( controller.createColumn ) );
+router.post( "/", authMiddleware, asyncMiddleware( controller.createColumn ) );
 
 /**
  * @swagger
@@ -149,10 +156,12 @@ router.post( "/", asyncMiddleware( controller.createColumn ) );
  *            $ref: '#/components/responses/NotFound'
  *          '500':
  *            $ref: '#/components/responses/InternalServerError'
+ *      security:
+ *        - bearerAuth: []
  *      tags:
  *        - Columns
  */
-router.patch( "/:id", asyncMiddleware( controller.updateColumn ) );
+router.patch( "/:id", authMiddleware, asyncMiddleware( controller.updateColumn ) );
 
 /**
  * @swagger
@@ -176,9 +185,11 @@ router.patch( "/:id", asyncMiddleware( controller.updateColumn ) );
  *            $ref: '#/components/responses/NotFound'
  *          '500':
  *            $ref: '#/components/responses/InternalServerError'
+ *      security:
+ *        - bearerAuth: []
  *      tags:
  *        - Columns
  */
-router.delete( "/:id", asyncMiddleware( controller.deleteColumn ) );
+router.delete( "/:id", authMiddleware, asyncMiddleware( controller.deleteColumn ) );
 
 module.exports = router;

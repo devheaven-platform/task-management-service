@@ -1,6 +1,7 @@
 const express = require( "express" );
 
 const asyncMiddleware = require( "../config/middleware/Async" );
+const authMiddleware = require( "../config/middleware/Auth" );
 const controller = require( "../controllers/BoardController" );
 
 /**
@@ -30,10 +31,12 @@ const router = express.Router();
  *            $ref: '#/components/responses/Unauthorized'
  *          '500':
  *            $ref: '#/components/responses/InternalServerError'
+ *      security:
+ *        - bearerAuth: []
  *      tags:
  *        - Boards
  */
-router.get( "/", asyncMiddleware( controller.getBoards ) );
+router.get( "/", authMiddleware, asyncMiddleware( controller.getBoards ) );
 
 /**
  * @swagger
@@ -71,10 +74,12 @@ router.get( "/", asyncMiddleware( controller.getBoards ) );
  *            $ref: '#/components/responses/Unauthorized'
  *          '500':
  *            $ref: '#/components/responses/InternalServerError'
+ *      security:
+ *        - bearerAuth: []
  *      tags:
  *        - Boards
  */
-router.get( "/for/:projectId", asyncMiddleware( controller.getBoardsForProject ) );
+router.get( "/for/:projectId", authMiddleware, asyncMiddleware( controller.getBoardsForProject ) );
 
 /**
  * @swagger
@@ -104,10 +109,12 @@ router.get( "/for/:projectId", asyncMiddleware( controller.getBoardsForProject )
  *            $ref: '#/components/responses/NotFound'
  *          '500':
  *            $ref: '#/components/responses/InternalServerError'
+ *      security:
+ *        - bearerAuth: []
  *      tags:
  *        - Boards
  */
-router.get( "/:id", asyncMiddleware( controller.getBoardById ) );
+router.get( "/:id", authMiddleware, asyncMiddleware( controller.getBoardById ) );
 
 /**
  * @swagger
@@ -146,10 +153,12 @@ router.get( "/:id", asyncMiddleware( controller.getBoardById ) );
  *            $ref: '#/components/responses/Unauthorized'
  *          '500':
  *            $ref: '#/components/responses/InternalServerError'
+ *      security:
+ *        - bearerAuth: []
  *      tags:
  *        - Boards
  */
-router.post( "/", asyncMiddleware( controller.createBoard ) );
+router.post( "/", authMiddleware, asyncMiddleware( controller.createBoard ) );
 
 /**
  * @swagger
@@ -199,10 +208,12 @@ router.post( "/", asyncMiddleware( controller.createBoard ) );
  *            $ref: '#/components/responses/NotFound'
  *          '500':
  *            $ref: '#/components/responses/InternalServerError'
+ *      security:
+ *        - bearerAuth: []
  *      tags:
  *        - Boards
  */
-router.patch( "/:id", asyncMiddleware( controller.updateBoard ) );
+router.patch( "/:id", authMiddleware, asyncMiddleware( controller.updateBoard ) );
 
 /**
  * @swagger
@@ -226,9 +237,11 @@ router.patch( "/:id", asyncMiddleware( controller.updateBoard ) );
  *            $ref: '#/components/responses/NotFound'
  *          '500':
  *            $ref: '#/components/responses/InternalServerError'
+ *      security:
+ *        - bearerAuth: []
  *      tags:
  *        - Boards
  */
-router.delete( "/:id", asyncMiddleware( controller.deleteBoard ) );
+router.delete( "/:id", authMiddleware, asyncMiddleware( controller.deleteBoard ) );
 
 module.exports = router;
